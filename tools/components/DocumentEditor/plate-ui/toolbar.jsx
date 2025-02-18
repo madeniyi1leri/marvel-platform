@@ -1,9 +1,6 @@
 import * as React from 'react';
 
 import {
-  FormatListBulleted as BulletListIcon,
-  FormatListNumbered as NumberedListIcon,
-  FormatListBulleted as ListIcon,
   ArrowDropDown as DropdownArrowIcon,
   FormatAlignLeft as LeftAlignIcon,
   FormatAlignCenter as CenterAlignIcon,
@@ -148,7 +145,70 @@ export const EditorToolbar = (props) => {
 
   const toggleBlock = (type) => {
     try {
-      editor.setNodes({ type: isBlockActive(type) ? 'paragraph' : type });
+      const { selection } = editor;
+      if (!selection) return;
+  
+      // Get current node and its properties
+      const [currentNodeEntry] = editor.nodes({
+        match: n => n.type,
+        at: selection,
+      });
+  
+      if (!currentNodeEntry) return;
+      
+      const [currentNode, path] = currentNodeEntry;
+      const currentAlign = currentNode.align || 'left';
+      const isList = currentNode.type === 'ul' || currentNode.type === 'ol';
+      const isHeading = currentNode.type && currentNode.type.startsWith('h');
+      
+      // CASE 1: Converting to list
+      if (type === 'ul' || type === 'ol') {
+        if (isList && currentNode.type === type) {
+          // Same list type → convert to paragraph while preserving alignment
+          editor.setNodes({
+            type: 'paragraph',
+            align: currentAlign,
+          });
+        } else {
+          // Different node type → convert to list while preserving alignment
+          editor.setNodes({
+            type: type,
+            align: currentAlign,
+          });
+        }
+      }
+      // CASE 2: Converting to heading
+      else if (type.startsWith('h')) {
+        if (isHeading && currentNode.type === type) {
+          // Same heading type → convert to paragraph
+          editor.setNodes({
+            type: 'paragraph', 
+            align: currentAlign
+          });
+        } else {
+          // Different node type (including list) → convert to heading
+          editor.setNodes({
+            type: type,
+            align: currentAlign,
+          });
+        }
+      }
+      // CASE 3: Converting to paragraph
+      else if (type === 'paragraph') {
+        // Any node type → convert to paragraph
+        editor.setNodes({
+          type: 'paragraph',
+          align: currentAlign,
+        });
+      }
+      // CASE 4: Changing alignment - NOT handled here
+      // CASE 5: Other conversions (code block, etc.)
+      else {
+        editor.setNodes({
+          type: isBlockActive(type) ? 'paragraph' : type,
+          align: currentAlign
+        });
+      }
     } catch (error) {
       console.warn(`Toolbar: Error toggling ${type}:`, error);
     }
@@ -305,23 +365,17 @@ export const EditorToolbar = (props) => {
         <div className="slate-toolbar-group flex items-center">
           <ListToolbarButton
             key="bulleted-list"
-            nodeType={ELEMENT_UL}
+            nodeType="ul"
             editor={editor}
-            isActive={isBlockActive(ELEMENT_UL)}
-            onClick={() => {
-              console.error('Bulleted List Button Clicked');
-              handleListStyleSelect(ELEMENT_UL);
-            }}
+            isActive={isBlockActive('ul')}
+            onClick={() => toggleBlock('ul')}
           />
           <ListToolbarButton
             key="numbered-list"
-            nodeType={ELEMENT_OL}
+            nodeType="ol"
             editor={editor}
-            isActive={isBlockActive(ELEMENT_OL)}
-            onClick={() => {
-              console.error('Numbered List Button Clicked');
-              handleListStyleSelect(ELEMENT_OL);
-            }}
+            isActive={isBlockActive('ol')}
+            onClick={() => toggleBlock('ol')}
           />
         </div>
 

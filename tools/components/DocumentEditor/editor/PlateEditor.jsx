@@ -89,13 +89,32 @@ export function PlateEditor(props) {
   // Plugins for editor instance & useplateeditor
   const plugins = [
     BlockquotePlugin,
-    ListPlugin,
+    ListPlugin.configure({
+      options: {
+        validTypes: ['ul', 'ol'],
+        validLiElements: ['ul', 'ol'],
+        enableMarks: true,
+        enableRestart: true,
+        listStyleType: true,
+        initialListStyleType: {
+          ul: 'disc',
+          ol: 'decimal'
+        },
+        listLevelsStyleType: {
+          ol: ['decimal', 'lower-alpha', 'lower-roman'],
+          ul: ['disc', 'circle', 'square']
+        }
+      },
+    }),
     ParagraphPlugin,
     HeadingPlugin,
     BoldPlugin,
     ItalicPlugin,
     UnderlinePlugin,
-    FontSizePlugin,
+    FontSizePlugin.configure({
+      defaultSize: 14,
+      validSizes: [8, 10, 12, 14, 16],
+    }),
     LinkPlugin.configure({
       options: {
         forceProtocol: true,
@@ -108,7 +127,10 @@ export function PlateEditor(props) {
       options: {},
     }),
     CodePlugin,
-    CodeBlockPlugin.configure({ options: { prism: Prism } }),
+    CodeBlockPlugin.configure({ options: { 
+      prism: Prism,
+      defaultLanguage: 'javascript',
+    } }),
     CodeLinePlugin.configure({}),
     CodeSyntaxPlugin.configure({
       syntax: {
@@ -157,12 +179,15 @@ export function PlateEditor(props) {
         }),
         ul: withProps(PlateElement, {
           as: 'ul',
+          className: 'list-disc pl-10 my-2',
         }),
         ol: withProps(PlateElement, {
           as: 'ol',
+          className: 'list-decimal pl-10 my-2',
         }),
         li: withProps(PlateElement, {
           as: 'li',
+          className: 'my-1',
         }),
         bold: withProps(PlateLeaf, { as: 'strong' }),
         italic: withProps(PlateLeaf, { as: 'em' }),

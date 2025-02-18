@@ -4,11 +4,8 @@ import React from 'react';
 
 import { withRef } from '@udecode/cn';
 import {
-  BulletedListPlugin,
   useListToolbarButton,
   useListToolbarButtonState,
-  ELEMENT_UL,
-  ELEMENT_OL
 } from '@udecode/plate-list/react';
 import { 
   FormatListBulleted as BulletListIcon, 
@@ -21,19 +18,20 @@ import { ToolbarButton } from './toolbar';
     
     const state = useListToolbarButtonState({ nodeType });
     const { props } = useListToolbarButton(state);
+
+    const Icon = nodeType === "ul" ? BulletListIcon : NumberedListIcon;
     return (
       <ToolbarButton
         className="slate-btn"
         ref={ref}
         tooltip={
-          nodeType === ELEMENT_UL ? 'Bulleted List' : 'Numbered List'
+          nodeType === "ul" ? 'Bulleted List' : 'Numbered List'
         }
-        isActive={isActive}
-       onClick={onClick}
-        {...props}
+        isActive={props.pressed}
+        onClick={props.onClick}
         {...rest}
       >
-        {nodeType === ELEMENT_UL ? <BulletListIcon /> : <NumberedListIcon />}
+        <Icon className="h-5 w-5" />
       </ToolbarButton>
     );
   }
