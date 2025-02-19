@@ -1,23 +1,47 @@
 import * as React from 'react';
 
 import {
-  FormatQuote as BlockQuoteIcon,
-  FormatBold as BoldIcon,
-  FormatListBulleted as BulletListIcon,
-  FormatItalic as ItalicIcon,
-  FormatListNumbered as NumberedListIcon,
-  FormatUnderlined as UnderlineIcon,
+  ArrowDropDown as DropdownArrowIcon,
+  FormatAlignLeft as LeftAlignIcon,
+  FormatAlignCenter as CenterAlignIcon,
+  FormatAlignRight as RightAlignIcon,
+  FormatAlignJustify as JustifyAlignIcon,
+  Code as CodeIcon,
+  Link as LinkIcon,
 } from '@mui/icons-material';
+
+import {
+  IconButton,
+  ListItemIcon,
+  ListItemText,
+  Menu,
+  MenuItem,
+  Typography,
+} from '@mui/material';
+import {
+  ELEMENT_UL, // Unordered List
+  ELEMENT_OL, // Ordered List
+} from '@udecode/plate-list/react';
+
 import * as ToolbarPrimitive from '@radix-ui/react-toolbar';
 import { cn, withCn } from '@udecode/cn';
+
 import { cva } from 'class-variance-authority';
 
 import { useDispatch } from 'react-redux';
 
+import AlignDropdownMenu from './AlignDropdownMenu';
+import LinkToolbarButton from './LinkToolbarButton';
+import ListToolbarButton from './ListToolbarButton';
+import TextStyle from './TextStyle';
 import ToolbarSeparator from './ToolbarSeparator';
 import { withTooltip } from './tooltip';
 
+import UndoRedo from './UndoRedo';
+
 import { actions as toolActions } from '@/tools/data';
+import FontStyle from './FontStyle';
+
 
 const { undo, redo } = toolActions;
 
@@ -50,7 +74,7 @@ export const Toolbar = withCn(
   'flex items-center bg-gray-800 bg-opacity-70 backdrop-blur-md rounded-lg border border-gray-700 shadow-lg'
 );
 
-const ToolbarButton = withTooltip(
+export const ToolbarButton = withTooltip(
   React.forwardRef(
     (
       { children, className, tooltip, isActive, onClick, ...restProps },
@@ -75,10 +99,19 @@ export const EditorToolbar = (props) => {
   const { editor } = props;
   if (!editor) return null;
 
-
   const dispatch = useDispatch();
   const handleUndo = () => dispatch(undo());
   const handleRedo = () => dispatch(redo());
+
+  const setAlignment = (alignment) => {
+    editor.setNodes({ align: alignment });
+  };
+  const toggleCodeBlock = () => {
+    editor.setNodes({
+      type: 'code_block',
+      children: [{ text: '' }],
+    });
+  };
 
   const isMarkActive = (format) => {
     const { selection } = editor;
@@ -112,141 +145,338 @@ export const EditorToolbar = (props) => {
 
   const toggleBlock = (type) => {
     try {
-      editor.setNodes({ type: isBlockActive(type) ? 'paragraph' : type });
+      const { selection } = editor;
+      if (!selection) return;
+  
+      // Get current node and its properties
+      const [currentNodeEntry] = editor.nodes({
+        match: n => n.type,
+        at: selection,
+      });
+  
+      if (!currentNodeEntry) return;
+      
+      const [currentNode, path] = currentNodeEntry;
+      const currentAlign = currentNode.align || 'left';
+      const isList = currentNode.type === 'ul' || currentNode.type === 'ol';
+      const isHeading = currentNode.type && currentNode.type.startsWith('h');
+      
+      // CASE 1: Converting to list
+      if (type === 'ul' || type === 'ol') {
+        if (isList && currentNode.type === type) {
+          // Same list type → convert to paragraph while preserving alignment
+          editor.setNodes({
+            type: 'paragraph',
+            align: currentAlign,
+          });
+        } else {
+          // Different node type → convert to list while preserving alignment
+          editor.setNodes({
+            type: type,
+            align: currentAlign,
+          });
+        }
+      }
+      // CASE 2: Converting to heading
+      else if (type.startsWith('h')) {
+        if (isHeading && currentNode.type === type) {
+          // Same heading type → convert to paragraph
+          editor.setNodes({
+            type: 'paragraph', 
+            align: currentAlign
+          });
+        } else {
+          // Different node type (including list) → convert to heading
+          editor.setNodes({
+            type: type,
+            align: currentAlign,
+          });
+        }
+      }
+      // CASE 3: Converting to paragraph
+      else if (type === 'paragraph') {
+        // Any node type → convert to paragraph
+        editor.setNodes({
+          type: 'paragraph',
+          align: currentAlign,
+        });
+      }
+      // CASE 4: Changing alignment - NOT handled here
+      // CASE 5: Other conversions (code block, etc.)
+      else {
+        editor.setNodes({
+          type: isBlockActive(type) ? 'paragraph' : type,
+          align: currentAlign
+        });
+      }
     } catch (error) {
       console.warn(`Toolbar: Error toggling ${type}:`, error);
     }
   };
 
+  const [anchorEl, setAnchorEl] = React.useState(null);
+  const open = Boolean(anchorEl);
+
+  const handleListMenuOpen = (event) => {
+    setAnchorEl(event.currentTarget);
+  };
+
+  const handleListMenuClose = () => {
+    setAnchorEl(null);
+  };
+
+  const handleListStyleSelect = (blockType) => {
+    console.error('handleListStyleSelect called with:', blockType);
+    toggleBlock(blockType);
+    handleListMenuClose();
+  };
+
+  const [alignmentAnchorEl, setAlignmentAnchorEl] = React.useState(null);
+  const openAlignment = Boolean(alignmentAnchorEl);
+
+  const handleAlignmentMenuOpen = (event) => {
+    setAlignmentAnchorEl(event.currentTarget);
+  };
+
+  const handleAlignmentMenuClose = () => {
+    setAlignmentAnchorEl(null);
+  };
+
+  const handleAlignmentSelect = (alignmentType) => {
+    toggleBlock(alignmentType);
+    handleAlignmentMenuClose();
+  };
+
+  // Font Style and Size State Management
+
+  const [fontSizeAnchorEl, setFontSizeAnchorEl] = React.useState(null);
+
+  const openFontSize = Boolean(fontSizeAnchorEl);
+
+  // Font Size Handlers
+  const handleFontSizeMenuOpen = (event) => {
+    setFontSizeAnchorEl(event.currentTarget);
+  };
+
+  const handleFontSizeMenuClose = () => {
+    setFontSizeAnchorEl(null);
+  };
+
+  const handleFontSizeSelect = (fontSizeStr) => {
+    // Extract the size number
+    const size = parseInt(fontSizeStr.replace('fontSize', ''), 10);
+    
+    // Apply the fontSize mark directly with a numeric value
+    editor.addMark('fontSize', size);
+    
+    handleFontSizeMenuClose();
+  };
+
+  const getCurrentFontSize = () => {
+    const marks = editor?.getMarks() || {};
+    return marks.fontSize ? `${marks.fontSize} pt` : '14 pt';
+  };
+
   return (
     <Toolbar className="slate-toolbar">
-      {/* <ToolbarSeparator /> */}
-      {/* Paragraph/Block Type Selection - MOVED TO THE FRONT */}
-      {/* <FormControl 
-        variant="standard" 
-        className="slate-dropdown"
-        sx={{ 
-          minWidth: 120, 
-          '& .MuiSelect-select': {
-            display: 'flex',
-            alignItems: 'center',
-            color: 'white',
-            backgroundColor: 'transparent',
-            '&:focus': {
-              backgroundColor: 'rgba(55, 65, 81, 0.5)',
-            }
-          },
-          '& .MuiSvgIcon-root': {
-            color: 'white',
-          },
-          '& .MuiInput-underline:before': {
-            borderBottomColor: 'rgba(255,255,255,0.3)',
-          },
-          '& .MuiInput-underline:hover:not(.Mui-disabled):before': {
-            borderBottomColor: 'white',
-          }
-        }}
-      >
-        <Select
-          value={headingLevel}
-          onChange={(e) => toggleBlock(e.target.value)}
-          displayEmpty
-          IconComponent={DropdownIcon}
-          renderValue={(selected) => {
-            if (!selected) {
-              return (
-                <div className="flex items-center text-gray-300">
-                  <HeadingIcon className="mr-2" />
-                  Paragraph
-                </div>
-              );
-            }
-            return headingOptions.find(opt => opt.value === selected)?.label;
-          }}
-        >
-          {headingOptions.map((option) => (
-            <MenuItem 
-              key={option.value} 
-              value={option.value}
-              sx={{
-                '&:hover': {
-                  backgroundColor: '#3E3A4B',
-                },
-                '&.Mui-selected': {
-                  backgroundColor: '#0C0B17',
-                }
-              }}
-            >
-              {option.label}
-            </MenuItem>
-          ))}
-        </Select>
-      </FormControl> */}
+      {/* Undo and Redo buttons */}
+
+      <UndoRedo handleUndo={handleUndo} handleRedo={handleRedo} />
+
+      <ToolbarSeparator />
       <div className="slate-btn-container">
-        <ToolbarSeparator />
-        <div className="slate-toolbar-group">
-          <ToolbarButton
-            tooltip="Bold"
-            isActive={isMarkActive('bold')}
-            onClick={() => toggleMark('bold')}
-            className={`slate-btn ${isMarkActive('bold') ? 'is-active' : ''}`}
+        <FontStyle
+          editor={editor}
+          isBlockActive={isBlockActive}
+          toggleBlock={toggleBlock}
+        />
+        <div className="slate-toolbar-group flex items-center">
+          <IconButton
+            id="font-size-button"
+            aria-controls={openFontSize ? 'font-size-menu' : undefined}
+            aria-haspopup="true"
+            aria-expanded={openFontSize ? 'true' : undefined}
+            onClick={handleFontSizeMenuOpen}
+            className="list-style-dropdown flex items-center"
           >
-            <BoldIcon className="h-5 w-5" />
-          </ToolbarButton>
-          <ToolbarButton
-            tooltip="Italic"
-            isActive={isMarkActive('italic')}
-            onClick={() => toggleMark('italic')}
-            className={`slate-btn ${isMarkActive('italic') ? 'is-active' : ''}`}
+            <Typography className="mr-1 list-style-dropdown">
+              {getCurrentFontSize()}
+            </Typography>
+          </IconButton>
+          <DropdownArrowIcon className="dropdown-arrow" />
+
+          <Menu
+            id="font-size-menu"
+            anchorEl={fontSizeAnchorEl}
+            open={openFontSize}
+            onClose={handleFontSizeMenuClose}
+            MenuListProps={{
+              'aria-labelledby': 'font-size-button',
+            }}
+            PaperProps={{
+              className: 'marvel-list-dropdown',
+              style: { maxHeight: '400px' },
+            }}
           >
-            <ItalicIcon className="h-5 w-5" />
-          </ToolbarButton>
-          <ToolbarButton
-            tooltip="Underline"
-            isActive={isMarkActive('underline')}
-            onClick={() => toggleMark('underline')}
-            className={`slate-btn ${isMarkActive('underline') ? 'is-active' : ''}`}
-          >
-            <UnderlineIcon className="h-5 w-5" />
-          </ToolbarButton>
+            <Typography className="list-text-font">Font Size</Typography>
+            {[8, 10, 12, 14, 16, 18, 24, 30, 36, 48, 60, 72, 96].map((size) => (
+              <MenuItem
+                key={size}
+                onClick={() => handleFontSizeSelect(`fontSize${size}`)}
+                className={`list-option ${
+                  isMarkActive(`fontSize${size}`) ? 'is-active' : ''
+                }`}
+              >
+                <ListItemText
+                  primary={`${size} pt`}
+                  style={{ fontSize: `${Math.min(size, 24)}px` }}
+                />
+              </MenuItem>
+            ))}
+          </Menu>
         </div>
         <ToolbarSeparator />
-        <div className="slate-toolbar-group">
-          <button onClick={handleUndo}>Undo</button>
-          <button onClick={handleRedo}>Redo</button>
-          {/* <ToolbarButton
-            tooltip="Bullet List"
-            isActive={isBlockActive('bulletList')}
-            onClick={() => toggleBlock('bulletList')}
-            className={`slate-btn ${isBlockActive('bulletList') ? 'is-active' : ''}`}
-          >
-            <BulletListIcon className="h-5 w-5" />
-          </ToolbarButton>
-          <ToolbarButton
-            tooltip="Numbered List"
-            isActive={isBlockActive('numberedList')}
-            onClick={() => toggleBlock('numberedList')}
-            className={`slate-btn ${isBlockActive('numberedList') ? 'is-active' : ''}`}
-          >
-            <NumberedListIcon className="h-5 w-5" />
-          </ToolbarButton> */}
-        </div>
-         {/* <ToolbarButton
-          tooltip="Block Quote"
-          isActive={isBlockActive('blockquote')}
-          onClick={() => toggleBlock('blockquote')}
-          className={`slate-btn ${isBlockActive('blockquote') ? 'is-active' : ''}`}
-        >
-          <BlockQuoteIcon className="h-5 w-5" />
-        </ToolbarButton> */}
+        <TextStyle
+          editor={editor}
+          isMarkActive={isMarkActive}
+          toggleMark={toggleMark}
+        />
+
         <ToolbarSeparator />
-        {/* <ToolbarButton
-          tooltip="Block Quote"
-          isActive={isBlockActive('blockquote')}
-          onClick={() => toggleBlock('blockquote')}
-        >
-          <BlockQuoteIcon className="h-5 w-5" />
-        </ToolbarButton> */}
+
+        <div className="slate-toolbar-group flex items-center">
+          <ListToolbarButton
+            key="bulleted-list"
+            nodeType="ul"
+            editor={editor}
+            isActive={isBlockActive('ul')}
+            onClick={() => toggleBlock('ul')}
+          />
+          <ListToolbarButton
+            key="numbered-list"
+            nodeType="ol"
+            editor={editor}
+            isActive={isBlockActive('ol')}
+            onClick={() => toggleBlock('ol')}
+          />
+        </div>
+
+        {/* <div className="slate-toolbar-group">
+          <IconButton
+            id="list-style-button"
+            aria-controls={open ? 'list-style-menu' : undefined}
+            aria-haspopup="true"
+            aria-expanded={open ? 'true' : undefined}
+            onClick={handleListMenuOpen}
+            className="list-style-dropdown flex items-center"
+          >
+            <ListIcon className="mr-1 list-style-dropdown" />
+           
+          </IconButton>
+          <DropdownArrowIcon className='dropdown-arrow' />
+          <Menu
+            id="list-style-menu"
+            anchorEl={anchorEl}
+            open={open}
+            onClose={handleListMenuClose}
+            MenuListProps={{
+              'aria-labelledby': 'list-style-button',
+            }}
+            PaperProps={{
+              className: 'marvel-list-dropdown',
+            }}
+          >
+            <Typography className='list-text'>List</Typography>
+            <MenuItem 
+              onClick={() => handleListStyleSelect('bulletList')}
+              className={`list-option ${isBlockActive('bulletList') ? 'is-active' : ''}`}
+            >
+              
+              <ListItemIcon>
+                <BulletListIcon />
+              </ListItemIcon>
+              <ListItemText primary="Bullet List" />
+            </MenuItem>
+            <MenuItem 
+              onClick={() => handleListStyleSelect('numberedList')}
+              className={`list-option ${isBlockActive('numberedList') ? 'is-active' : ''}`}
+            >
+              <ListItemIcon>
+                <NumberedListIcon />
+              </ListItemIcon>
+              <ListItemText primary="Number List" />
+            </MenuItem>
+          </Menu>
+        </div> */}
+
+        {/* <div className="slate-toolbar-group flex items-center">
+          <IconButton
+            id="alignment-style-button"
+            aria-controls={openAlignment ? 'alignment-style-menu' : undefined}
+            aria-haspopup="true"
+            aria-expanded={openAlignment ? 'true' : undefined}
+            onClick={handleAlignmentMenuOpen}
+            className="list-style-dropdown flex items-center"
+          >
+            <LeftAlignIcon className="mr-1 list-style-dropdown" />
+          </IconButton>
+          <DropdownArrowIcon className='dropdown-arrow' />
+          <Menu
+            id="alignment-style-menu"
+            anchorEl={alignmentAnchorEl}
+            open={openAlignment}
+            onClose={handleAlignmentMenuClose}
+            MenuListProps={{
+              'aria-labelledby': 'alignment-style-button',
+            }}
+            PaperProps={{
+              className: 'marvel-list-dropdown',
+            }}
+          >
+            <Typography className='list-text'>Alignment</Typography>
+            <MenuItem
+              onClick={() => handleAlignmentSelect('leftAlign')}
+              className={`list-option ${isBlockActive('leftAlign') ? 'is-active' : ''}`}
+            >
+              <ListItemIcon>
+                <LeftAlignIcon />
+              </ListItemIcon>
+              <ListItemText primary="Left Align" />
+            </MenuItem>
+            <MenuItem
+              onClick={() => handleAlignmentSelect('centerAlign')}
+              className={`list-option ${isBlockActive('centerAlign') ? 'is-active' : ''}`}
+            >
+              <ListItemIcon>
+                <CenterAlignIcon />
+              </ListItemIcon>
+              <ListItemText primary="Center Align" />
+            </MenuItem>
+            <MenuItem
+              onClick={() => handleAlignmentSelect('rightAlign')}
+              className={`list-option ${isBlockActive('rightAlign') ? 'is-active' : ''}`}
+            >
+              <ListItemIcon>
+                <RightAlignIcon />
+              </ListItemIcon>
+              <ListItemText primary="Right Align" />
+            </MenuItem>
+            <MenuItem
+              onClick={() => handleAlignmentSelect('justifyAlign')}
+              className={`list-option ${isBlockActive('justifyAlign') ? 'is-active' : ''}`}
+            >
+              <ListItemIcon>
+                <JustifyAlignIcon />
+              </ListItemIcon>
+              <ListItemText primary="Justify Align" />
+            </MenuItem>
+          </Menu>
+        </div> */}
+        <AlignDropdownMenu />
+
+        <ToolbarSeparator />
+
+        <LinkToolbarButton />
       </div>
     </Toolbar>
   );

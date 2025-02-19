@@ -2,7 +2,6 @@
 @tailwind components;
 @tailwind utilities;
 
-
 .slate-quiz-container {
   display: flex;
   flex-direction: column;
@@ -45,14 +44,14 @@
 .slate-editor {
   padding: 16px;
 
-  background-color: transparent; 
+  background-color: transparent;
 
-  color: #FFFFFF; 
+  color: #ffffff;
   border-radius: 0px 0px 12px 12px;
 
-  border-left: 1px solid #9D74FF;
-  border-right: 1px solid #9D74FF; 
-  border-bottom: 1px solid #9D74FF;
+  border-left: 1px solid #9d74ff;
+  border-right: 1px solid #9d74ff;
+  border-bottom: 1px solid #9d74ff;
 }
 
 .slate-toolbar {
@@ -62,10 +61,10 @@
   gap: 8px;
   padding: 8px 16px;
 
-  background: #24272F;
-  border-top: 1px solid #9D74FF;
-  border-left: 1px solid #9D74FF;
-  border-right: 1px solid #9D74FF;
+  background: #24272f;
+  border-top: 1px solid #9d74ff;
+  border-left: 1px solid #9d74ff;
+  border-right: 1px solid #9d74ff;
   border-radius: 12px 12px 0px 0px;
   width: 100%;
   overflow-x: auto;
@@ -88,7 +87,7 @@
   background: transparent;
   border: none;
 
-  color: #9E7EFF; 
+  color: #9e7eff;
   transition: all 0.3s ease;
   display: inline-flex;
   align-items: center;
@@ -100,14 +99,13 @@
 }
 
 .slate-btn:hover {
-  background: #0C0B17;
-  color: #9E7EFF; 
+  background: #decdff;
+  color: #0c0b17;
 }
 
 .slate-btn.is-active {
-  background: #4A2C4A; 
-  color: #9E94A5; 
- 
+  background: #4a2c4a;
+  color: #9e94a5;
 }
 
 .slate-btn-indicator {
@@ -116,14 +114,14 @@
   left: 0;
   width: 100%;
   height: 2px;
-  background-color: #B084B0; 
+  background-color: #b084b0;
   opacity: 0.75;
   border-radius: 0 0 8px 8px;
 }
 
 .slate-dropdown {
-  color: #FFFFFF;
-  background-color: #0C0B17;
+  color: #ffffff;
+  background-color: #0c0b17;
   border: 1px solid transparent;
   border-radius: 5px;
   padding: 4px 8px;
@@ -131,15 +129,15 @@
 }
 
 .slate-dropdown:hover {
-  background-color: #3E3A4B;
+  background-color: #3e3a4b;
 }
 
 .slate-separator {
   height: 17.5px;
-  background-color: #DECDFF; 
+  background-color: #decdff;
   width: 1px;
   margin: 0 8px;
-  opacity: .6;
+  opacity: 0.6;
 }
 /* 
 .slate-h1 {
@@ -169,107 +167,243 @@
 
 .slate-h1 {
   font-family: "Satoshi Bold", sans-serif;
-  font-size: 20px; 
-  line-height: 27px; 
+  font-size: 20px;
+  line-height: 27px;
   font-weight: 700;
-  letter-spacing: -0.02em; 
+  letter-spacing: -0.02em;
   text-align: left;
   color: #ffffff;
-  margin-top: 20px; 
+  margin-top: 20px;
   white-space: pre-wrap;
 }
 .slate-p {
   font-family: "Satoshi Regular", sans-serif;
-  font-size: 20px; 
-  line-height: 27px; 
+  font-size: 20px;
+  line-height: 27px;
   font-weight: 400;
-  letter-spacing: -0.02em; 
+  letter-spacing: -0.02em;
   text-align: left;
   color: #ffffff;
-  white-space: pre-wrap; 
+  white-space: pre-wrap;
 }
+
+/* Marvel-inspired List Dropdown Styles for Material-UI */
+.marvel-list-dropdown {
+  background: #24272f;
+  color: white;
+  border: 1px solid #decdff;
+  border-radius: 5px;
+}
+
+.marvel-list-dropdown .MuiMenuItem-root {
+  color: white;
+  transition: background-color 0.3s ease;
+}
+
+.marvel-list-dropdown .MuiMenuItem-root:hover {
+  background-color: #decdff;
+}
+
+.marvel-list-dropdown .MuiMenuItem-root.is-active {
+  background-color: rgba(255, 255, 255, 0.3) !important;
+  font-weight: bold !important;
+}
+/* #9E7EFF */
+.list-style-dropdown {
+  background-color: transparent;
+  color: #9e7eff;
+  border-radius: 5px;
+  padding: 2px;
+  display: flex !important;
+  align-items: center !important;
+}
+.dropdown-arrow {
+  background-color: transparent;
+  color: #9e7eff;
+  margin-left: -8px;
+}
+.dropdown-arrow:hover {
+  background-color: transparent;
+}
+.list-style-dropdown .MuiSvgIcon-root {
+  color: #9e7eff;
+  margin-left: 4px;
+}
+
+.list-style-dropdown:hover {
+  background-color: #decdff;
+  color: #24272f !important;
+}
+
+/* Styles for dropdown menu items with icons */
+.marvel-list-dropdown .MuiListItemIcon-root {
+  color: #9e7eff !important;
+  min-width: 40px;
+}
+
+.marvel-list-dropdown .MuiListItemIcon-root svg {
+  width: 20px;
+  height: 20px;
+}
+
+.list-text {
+  color: #decdff;
+  margin-left: 18px;
+  margin-top: 10px;
+  font-size: 15px;
+}
+.list-text-font {
+  color: #decdff;
+  margin-top: 10px;
+  padding: 10px;
+}
+.marvel-list-dropdown .MuiListItemText-primary {
+  color: white;
+}
+.marvel-list-dropdown .MuiListItemText-primary:hover {
+  color: #24272f;
+}
+.marvel-list-dropdown .MuiMenuItem-root {
+  display: flex;
+  align-items: center;
+}
+
+/* Additional styles for alignment dropdown */
+.alignment-dropdown-arrow {
+  background-color: transparent;
+  color: #9e7eff;
+  margin-left: -8px;
+}
+
+.alignment-dropdown-arrow:hover {
+  background-color: transparent;
+}
+
+/* Font Style and Size Dropdown Styles */
+.font-style-dropdown {
+  display: flex;
+  align-items: center;
+  color: #9e7eff;
+  background-color: transparent;
+}
+
+.font-size-dropdown {
+  display: flex;
+  align-items: center;
+  color: #9e7eff;
+  background-color: transparent;
+}
+
+.font-style-dropdown .MuiListItemText-primary,
+.font-size-dropdown .MuiListItemText-primary {
+  color: #decdff;
+  margin-left: 18px;
+}
+
+.font-style-dropdown .MuiListItemText-primary:hover,
+.font-size-dropdown .MuiListItemText-primary:hover {
+  color: #24272f;
+}
+
+/* Font Size Utility Classes */
+.fontSize8 {
+  font-size: 8px;
+}
+.fontSize10 {
+  font-size: 10px;
+}
+.fontSize12 {
+  font-size: 12px;
+}
+.fontSize14 {
+  font-size: 14px;
+}
+.fontSize16 {
+  font-size: 16px;
+}
+
 /*
 Roboto-Mono font imported here
 */
-@import url('https://fonts.googleapis.com/css2?family=Roboto+Mono&display=swap');
+@import url("https://fonts.googleapis.com/css2?family=Roboto+Mono&display=swap");
 
 /*
 Ethnocentric fonts imported here
 */
 @font-face {
-  font-family: 'Ethnocentric Regular';
-  src: local('Ethnocentric Regular'),
-    url(/fonts/Ethnocentric/Ethnocentric-Regular.otf) format('opentype');
+  font-family: "Ethnocentric Regular";
+  src: local("Ethnocentric Regular"),
+    url(/fonts/Ethnocentric/Ethnocentric-Regular.otf) format("opentype");
 }
 
 @font-face {
-  font-family: 'Ethnocentric Regular Italics';
-  src: local('Ethnocentric Regular Italics'),
-    url(/fonts/Ethnocentric/Ethnocentric-Regular-Italics.otf) format('opentype');
+  font-family: "Ethnocentric Regular Italics";
+  src: local("Ethnocentric Regular Italics"),
+    url(/fonts/Ethnocentric/Ethnocentric-Regular-Italics.otf) format("opentype");
 }
 
 /*
 Satoshi fonts imported here
 */
 @font-face {
-  font-family: 'Satoshi Black';
-  src: local('Satoshi Black'),
-    url(/fonts/Satoshi/Satoshi-Black.otf) format('opentype');
+  font-family: "Satoshi Black";
+  src: local("Satoshi Black"),
+    url(/fonts/Satoshi/Satoshi-Black.otf) format("opentype");
 }
 
 @font-face {
-  font-family: 'Satoshi Bold';
-  src: local('Satoshi Bold'),
-    url(/fonts/Satoshi/Satoshi-Bold.otf) format('opentype');
+  font-family: "Satoshi Bold";
+  src: local("Satoshi Bold"),
+    url(/fonts/Satoshi/Satoshi-Bold.otf) format("opentype");
 }
 
 @font-face {
-  font-family: 'Satoshi Medium';
-  src: local('Satoshi Medium'),
-    url(/fonts/Satoshi/Satoshi-Medium.otf) format('opentype');
+  font-family: "Satoshi Medium";
+  src: local("Satoshi Medium"),
+    url(/fonts/Satoshi/Satoshi-Medium.otf) format("opentype");
 }
 
 @font-face {
-  font-family: 'Satoshi Regular';
-  src: local('Satoshi Regular'),
-    url(/fonts/Satoshi/Satoshi-Regular.otf) format('opentype');
+  font-family: "Satoshi Regular";
+  src: local("Satoshi Regular"),
+    url(/fonts/Satoshi/Satoshi-Regular.otf) format("opentype");
 }
 
 /*
 MoldeSemiExpanded fonts imported here
 */
 @font-face {
-  font-family: 'Molde Semi Expanded Black';
-  src: local('Molde Semi Expanded Black'),
-    url(/fonts/MoldeSemiExpanded/Molde-SemiExpanded-Black.woff) format('woff'),
-    url(/fonts/MoldeSemiExpanded/Molde-SemiExpanded-Black.woff2) format('woff2'),
-    url(/fonts/MoldeSemiExpanded/Molde-SemiExpanded-Black.ttf) format('ttf');
+  font-family: "Molde Semi Expanded Black";
+  src: local("Molde Semi Expanded Black"),
+    url(/fonts/MoldeSemiExpanded/Molde-SemiExpanded-Black.woff) format("woff"),
+    url(/fonts/MoldeSemiExpanded/Molde-SemiExpanded-Black.woff2) format("woff2"),
+    url(/fonts/MoldeSemiExpanded/Molde-SemiExpanded-Black.ttf) format("ttf");
 }
 
 @font-face {
-  font-family: 'Molde Semi Expanded Bold';
-  src: local('Molde Semi Expanded Bold'),
-    url(/fonts/MoldeSemiExpanded/Molde-SemiExpanded-Bold.woff) format('woff'),
-    url(/fonts/MoldeSemiExpanded/Molde-SemiExpanded-Bold.woff2) format('woff2'),
-    url(/fonts/MoldeSemiExpanded/Molde-SemiExpanded-Bold.ttf) format('ttf');
+  font-family: "Molde Semi Expanded Bold";
+  src: local("Molde Semi Expanded Bold"),
+    url(/fonts/MoldeSemiExpanded/Molde-SemiExpanded-Bold.woff) format("woff"),
+    url(/fonts/MoldeSemiExpanded/Molde-SemiExpanded-Bold.woff2) format("woff2"),
+    url(/fonts/MoldeSemiExpanded/Molde-SemiExpanded-Bold.ttf) format("ttf");
 }
 
 @font-face {
-  font-family: 'Molde Semi Expanded Medium';
-  src: local('Molde Semi Expanded Medium'),
-    url(/fonts/MoldeSemiExpanded/Molde-SemiExpanded-Medium.woff) format('woff'),
+  font-family: "Molde Semi Expanded Medium";
+  src: local("Molde Semi Expanded Medium"),
+    url(/fonts/MoldeSemiExpanded/Molde-SemiExpanded-Medium.woff) format("woff"),
     url(/fonts/MoldeSemiExpanded/Molde-SemiExpanded-Medium.woff2)
-      format('woff2'),
-    url(/fonts/MoldeSemiExpanded/Molde-SemiExpanded-Medium.ttf) format('ttf');
+      format("woff2"),
+    url(/fonts/MoldeSemiExpanded/Molde-SemiExpanded-Medium.ttf) format("ttf");
 }
 
 @font-face {
-  font-family: 'Molde Semi Expanded Regular';
-  src: local('Molde Semi Expanded Regular'),
-    url(/fonts/MoldeSemiExpanded/Molde-SemiExpanded-Regular.woff) format('woff'),
+  font-family: "Molde Semi Expanded Regular";
+  src: local("Molde Semi Expanded Regular"),
+    url(/fonts/MoldeSemiExpanded/Molde-SemiExpanded-Regular.woff) format("woff"),
     url(/fonts/MoldeSemiExpanded/Molde-SemiExpanded-Regular.woff2)
-      format('woff2'),
-    url(/fonts/MoldeSemiExpanded/Molde-SemiExpanded-Regular.ttf) format('ttf');
+      format("woff2"),
+    url(/fonts/MoldeSemiExpanded/Molde-SemiExpanded-Regular.ttf) format("ttf");
 }
 
 * {

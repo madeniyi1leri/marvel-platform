@@ -635,6 +635,34 @@
     margin-bottom: 0;
   }
 
+  .slate-editor ol {
+    list-style-type: decimal; /* Ensures top-level ordered lists use numbers */
+  }
+
+  .slate-editor div > ol:not([type]) {
+    list-style-type: decimal; /* Reinforces decimal numbering for direct ol children */
+  }
+
+  .slate-editor ol[type='1'] {
+    list-style-type: decimal;
+  }
+  
+  .slate-editor ol[type='a s'] {
+    list-style-type: lower-alpha;
+  }
+  
+  .slate-editor ol[type='A s'] {
+    list-style-type: upper-alpha;
+  }
+  
+  .slate-editor ol[type='i s'] {
+    list-style-type: lower-roman;
+  }
+  
+  .slate-editor ol[type='I s'] {
+    list-style-type: upper-roman;
+  }
+  
   .slate-editor li > p {
     margin-top: 16px;
   }
@@ -762,6 +790,19 @@
   .slate-editor span.align-right span img {
     margin: 0;
     text-align: right;
+  }
+
+  .slate-editor [data-align="center"] {
+    text-align: center;
+  }
+  .slate-editor [data-align="right"] {
+    text-align: right;
+  }
+  .slate-editor [data-align="left"] {
+    text-align: left;
+  }
+  .slate-editor [data-align="justify"] {
+    text-align: justify;
   }
 
   .slate-editor span.float-left {
