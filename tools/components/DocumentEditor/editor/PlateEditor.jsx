@@ -112,8 +112,12 @@ export function PlateEditor(props) {
     ItalicPlugin,
     UnderlinePlugin,
     FontSizePlugin.configure({
-      defaultSize: 14,
-      validSizes: [8, 10, 12, 14, 16],
+      inject: {
+        props: {
+          defaultNodeValue: 14,
+          validNodeValues: [8, 10, 12, 14, 16, 18, 24, 30, 36, 48, 60, 72, 96],
+        },
+      },
     }),
     LinkPlugin.configure({
       options: {
@@ -152,10 +156,6 @@ export function PlateEditor(props) {
       inject: {
         targetPlugins: [ParagraphPlugin.key, HEADING_KEYS.h1],
       },
-    }),
-    FontSizePlugin.configure({
-      defaultSize: 16,
-      validSizes: [8, 10, 12, 14, 16],
     }),
     AlignPlugin.configure({
       defaultAlign: 'left',
@@ -204,13 +204,14 @@ export function PlateEditor(props) {
         tr: withProps(PlateElement, { as: 'tr', className: 'border-b border-gray-200' }),
         th: withProps(PlateElement, { as: 'th', className: 'px-4 py-2 text-left bg-gray-100' }),
         td: withProps(PlateElement, { as: 'td', className: 'px-4 py-2' }),
-        ...[8, 10, 12, 14, 16].reduce((acc, size) => {
-          acc[`fontSize${size}`] = withProps(PlateLeaf, {
-            as: 'span',
-            style: { fontSize: `${size}px` }
-          });
-          return acc;
-        }, {}),
+        [FontSizePlugin.key]: withProps(PlateLeaf, ({ children, nodeProps }) => {
+          const { fontSize = 14 } = nodeProps || {};
+          return (
+            <span style={{ fontSize: `${fontSize}px` }}>
+              {children}
+            </span>
+          );
+        }),
       },
     },
     plugins,

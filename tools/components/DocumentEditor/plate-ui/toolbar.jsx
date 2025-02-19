@@ -262,38 +262,19 @@ export const EditorToolbar = (props) => {
     setFontSizeAnchorEl(null);
   };
 
-  const handleFontSizeSelect = (fontSize) => {
-    // Remove existing font size marks
-    const fontSizes = [
-      'fontSize8',
-      'fontSize10',
-      'fontSize12',
-      'fontSize14',
-      'fontSize16',
-    ];
-    fontSizes.forEach((size) => {
-      if (isMarkActive(size)) {
-        editor.removeMark(size);
-      }
-    });
-
-    // Add new font size mark
-    editor.addMark(fontSize, true);
+  const handleFontSizeSelect = (fontSizeStr) => {
+    // Extract the size number
+    const size = parseInt(fontSizeStr.replace('fontSize', ''), 10);
+    
+    // Apply the fontSize mark directly with a numeric value
+    editor.addMark('fontSize', size);
+    
     handleFontSizeMenuClose();
   };
 
   const getCurrentFontSize = () => {
-    const fontSizes = [
-      'fontSize8',
-      'fontSize10',
-      'fontSize12',
-      'fontSize14',
-      'fontSize16',
-    ];
-    const activeFontSize = fontSizes.find((size) => isMarkActive(size));
-    return activeFontSize
-      ? `${activeFontSize.replace('fontSize', '')} pt`
-      : '14 pt';
+    const marks = editor?.getMarks() || {};
+    return marks.fontSize ? `${marks.fontSize} pt` : '14 pt';
   };
 
   return (
@@ -334,10 +315,11 @@ export const EditorToolbar = (props) => {
             }}
             PaperProps={{
               className: 'marvel-list-dropdown',
+              style: { maxHeight: '400px' },
             }}
           >
             <Typography className="list-text-font">Font Size</Typography>
-            {[8, 10, 12, 14, 16].map((size) => (
+            {[8, 10, 12, 14, 16, 18, 24, 30, 36, 48, 60, 72, 96].map((size) => (
               <MenuItem
                 key={size}
                 onClick={() => handleFontSizeSelect(`fontSize${size}`)}
@@ -347,7 +329,7 @@ export const EditorToolbar = (props) => {
               >
                 <ListItemText
                   primary={`${size} pt`}
-                  style={{ fontSize: `${size}px` }}
+                  style={{ fontSize: `${Math.min(size, 24)}px` }}
                 />
               </MenuItem>
             ))}
