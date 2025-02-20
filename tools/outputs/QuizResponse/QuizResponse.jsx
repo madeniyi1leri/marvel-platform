@@ -37,11 +37,6 @@ const QuizResponse = () => {
         <Grid {...styles.questionsGridProps}>
           <DocumentEditor markdownContent={markdownContent} />
         </Grid>
-        <button onClick={handleUndo}>Undo</button>
-        <button onClick={handleRedo}>Redo</button>
-        <Grid {...styles.questionsGridProps}>
-          <DocumentEditor markdownContent={markdownContent} />
-        </Grid>
       </Grid>
     </Fade>
   );
