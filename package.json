@@ -34,6 +34,7 @@
     "@udecode/plate-code-block": "^44.0.0",
     "@udecode/plate-combobox": "^44.0.0",
     "@udecode/plate-common": "^42.0.0",
+    "@udecode/plate-floating": "^44.0.0",
     "@udecode/plate-font": "^44.0.0",
     "@udecode/plate-heading": "^44.0.0",
     "@udecode/plate-highlight": "^44.0.0",
