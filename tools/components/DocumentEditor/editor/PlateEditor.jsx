@@ -224,6 +224,10 @@ export function PlateEditor(props) {
           className: 'px-4 py-2 text-left bg-gray-100',
         }),
         td: withProps(PlateElement, { as: 'td', className: 'px-4 py-2' }),
+        [CodePlugin.key]: withProps(PlateLeaf, { as: 'code' }),
+        [CodeBlockPlugin.key]: CodeBlockElement,
+        [CodeLinePlugin.key]: CodeLineElement,
+        [CodeSyntaxPlugin.key]: CodeSyntaxLeaf,
         [FontSizePlugin.key]: withProps(
           PlateLeaf,
           ({ children, nodeProps }) => {

@@ -1,3 +1,4 @@
+/* eslint-disable no-unused-expressions */
 import * as React from 'react';
 
 import { ArrowDropDown as DropdownArrowIcon } from '@mui/icons-material';
@@ -220,10 +221,10 @@ export const EditorToolbar = (props) => {
     handleFontSizeMenuClose();
   };
 
-  const getCurrentFontSize = () => {
-    const marks = editor?.getMarks() || {};
-    return marks.fontSize ? `${marks.fontSize} pt` : '14 pt';
-  };
+  // const getCurrentFontSize = () => {
+  //   const marks = editor?.getMarks() || {};
+  //   return marks.fontSize ? `${marks.fontSize} pt` : '14 pt';
+  // };
 
   return (
     <Toolbar className="slate-toolbar">
@@ -246,7 +247,7 @@ export const EditorToolbar = (props) => {
             className="list-style-dropdown flex items-center"
           >
             <Typography className="mr-1 list-style-dropdown">
-              {getCurrentFontSize()}
+              14 pt /* Needs a rework */
             </Typography>
           </IconButton>
           <DropdownArrowIcon className="dropdown-arrow" />
