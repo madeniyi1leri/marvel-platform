@@ -1,24 +1,23 @@
-import { Fade, Grid } from '@mui/material';
+import React from "react";
 
-import { useSelector } from 'react-redux';
+import { Fade, Grid } from "@mui/material";
 
-import DocumentEditor from '../../components/DocumentEditor/DocumentEditor';
-import React from 'react';
+import { useSelector } from "react-redux";
 
-import styles from './styles';
+import { useDispatch } from "react-redux";
 
-import { Fade, Grid } from '@mui/material';
+import DocumentEditor from "../../components/DocumentEditor/DocumentEditor";
 
-import { useSelector } from 'react-redux';
-import { actions as toolActions } from '@/tools/data';
+import styles from "./styles";
 
-import DocumentEditor from '../../components/DocumentEditor/DocumentEditor';
-import { useDispatch } from 'react-redux';
+import { actions as toolActions } from "@/tools/data";
 
 const { undo, redo } = toolActions;
 
 const QuizResponse = () => {
-  const { content: markdownContent } = useSelector((state) => state.tools.editorState.currentState);
+  const { content: markdownContent } = useSelector(
+    (state) => state.tools.editorState.currentState
+  );
 
   const dispatch = useDispatch();
   // const { content: markdownContent } = useSelector(
@@ -47,6 +46,5 @@ const QuizResponse = () => {
     </Fade>
   );
 };
-
 
 export default QuizResponse;
