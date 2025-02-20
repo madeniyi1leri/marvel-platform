@@ -1,13 +1,3 @@
-// import React, { useEffect, useState } from "react";
-
-import { MarkdownPlugin } from "@udecode/plate-markdown";
-
-import { IndentListPlugin } from "@udecode/plate-indent-list/react";
-
-import { useSelector, useDispatch } from "react-redux";
-
-import { actions as toolActions } from "@/tools/data";
-import { syncHistoryEntry } from "@/tools/data/thunks/editHistory";
 import React, { useEffect, useState } from "react";
 
 import { withProps } from "@udecode/cn";
@@ -62,8 +52,6 @@ import { EDIT_HISTORY_TYPES } from "@/tools/libs/constants/editor";
 import { TablePlugin } from "@udecode/plate-table/react";
 
 const { addStateToEditHistory } = toolActions;
-
-import { EditorToolbar } from "../plate-ui/toolbar";
 
 /**
  * Creates a debounced function that delays invoking the callback
