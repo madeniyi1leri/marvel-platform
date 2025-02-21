@@ -1,4 +1,4 @@
-import * as React from 'react';
+import * as React from "react";
 
 import {
   ArrowDropDown as DropdownArrowIcon,
@@ -8,7 +8,7 @@ import {
   FormatAlignJustify as JustifyAlignIcon,
   Code as CodeIcon,
   Link as LinkIcon,
-} from '@mui/icons-material';
+} from "@mui/icons-material";
 
 import {
   IconButton,
@@ -17,53 +17,52 @@ import {
   Menu,
   MenuItem,
   Typography,
-} from '@mui/material';
+} from "@mui/material";
 import {
   ELEMENT_UL, // Unordered List
   ELEMENT_OL, // Ordered List
-} from '@udecode/plate-list/react';
+} from "@udecode/plate-list/react";
 
-import * as ToolbarPrimitive from '@radix-ui/react-toolbar';
-import { cn, withCn } from '@udecode/cn';
+import * as ToolbarPrimitive from "@radix-ui/react-toolbar";
+import { cn, withCn } from "@udecode/cn";
 
-import { cva } from 'class-variance-authority';
+import { cva } from "class-variance-authority";
 
-import { useDispatch } from 'react-redux';
+import { useDispatch } from "react-redux";
 
-import AlignDropdownMenu from './AlignDropdownMenu';
-import LinkToolbarButton from './LinkToolbarButton';
-import ListToolbarButton from './ListToolbarButton';
-import TextStyle from './TextStyle';
-import ToolbarSeparator from './ToolbarSeparator';
-import { withTooltip } from './tooltip';
+import AlignDropdownMenu from "./AlignDropdownMenu";
+import LinkToolbarButton from "./LinkToolbarButton";
+import ListToolbarButton from "./ListToolbarButton";
+import TextStyle from "./TextStyle";
+import ToolbarSeparator from "./ToolbarSeparator";
+import { withTooltip } from "./tooltip";
 
-import UndoRedo from './UndoRedo';
+import UndoRedo from "./UndoRedo";
 
-import { actions as toolActions } from '@/tools/data';
-import FontStyle from './FontStyle';
-
+import { actions as toolActions } from "@/tools/data";
+import FontStyle from "./FontStyle";
 
 const { undo, redo } = toolActions;
 
 const toolbarButtonVariants = cva(
   cn(
-    'inline-flex items-center justify-center gap-2 rounded-md text-sm font-medium text-white/80 hover:bg-gray-700 hover:text-white transition-colors',
-    'focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-blue-500',
-    'disabled:opacity-50 disabled:cursor-not-allowed'
+    "inline-flex items-center justify-center gap-2 rounded-md text-sm font-medium text-white/80 hover:bg-gray-700 hover:text-white transition-colors",
+    "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-blue-500",
+    "disabled:opacity-50 disabled:cursor-not-allowed"
   ),
   {
     defaultVariants: {
-      size: 'sm',
-      variant: 'default',
+      size: "sm",
+      variant: "default",
     },
     variants: {
       size: {
-        default: 'h-9 px-3',
-        sm: 'h-8 px-2',
+        default: "h-9 px-3",
+        sm: "h-8 px-2",
       },
       variant: {
-        default: 'bg-transparent',
-        active: 'bg-gray-700 text-white',
+        default: "bg-transparent",
+        active: "bg-gray-700 text-white",
       },
     },
   }
@@ -71,19 +70,28 @@ const toolbarButtonVariants = cva(
 
 export const Toolbar = withCn(
   ToolbarPrimitive.Root,
-  'flex items-center bg-gray-800 bg-opacity-70 backdrop-blur-md rounded-lg border border-gray-700 shadow-lg'
+  "flex items-center bg-gray-800 bg-opacity-70 backdrop-blur-md rounded-lg border border-gray-700 shadow-lg"
 );
 
 export const ToolbarButton = withTooltip(
   React.forwardRef(
     (
-      { children, className, tooltip, isActive, onClick, ...restProps },
+      {
+        children,
+        className,
+        tooltip,
+        isActive,
+        onClick,
+        key,
+        editor,
+        ...restProps
+      },
       ref
     ) => (
       <ToolbarPrimitive.Button
         ref={ref}
         className={cn(
-          toolbarButtonVariants({ variant: isActive ? 'active' : 'default' }),
+          toolbarButtonVariants({ variant: isActive ? "active" : "default" }),
           className
         )}
         onClick={onClick}
@@ -96,7 +104,7 @@ export const ToolbarButton = withTooltip(
 );
 
 export const EditorToolbar = (props) => {
-  const { editor } = props;
+  const { editor, customButtons = []} = props;
   if (!editor) return null;
 
   const dispatch = useDispatch();
@@ -108,8 +116,8 @@ export const EditorToolbar = (props) => {
   };
   const toggleCodeBlock = () => {
     editor.setNodes({
-      type: 'code_block',
-      children: [{ text: '' }],
+      type: "code_block",
+      children: [{ text: "" }],
     });
   };
 
@@ -147,26 +155,26 @@ export const EditorToolbar = (props) => {
     try {
       const { selection } = editor;
       if (!selection) return;
-  
+
       // Get current node and its properties
       const [currentNodeEntry] = editor.nodes({
-        match: n => n.type,
+        match: (n) => n.type,
         at: selection,
       });
-  
+
       if (!currentNodeEntry) return;
-      
+
       const [currentNode, path] = currentNodeEntry;
-      const currentAlign = currentNode.align || 'left';
-      const isList = currentNode.type === 'ul' || currentNode.type === 'ol';
-      const isHeading = currentNode.type && currentNode.type.startsWith('h');
-      
+      const currentAlign = currentNode.align || "left";
+      const isList = currentNode.type === "ul" || currentNode.type === "ol";
+      const isHeading = currentNode.type && currentNode.type.startsWith("h");
+
       // CASE 1: Converting to list
-      if (type === 'ul' || type === 'ol') {
+      if (type === "ul" || type === "ol") {
         if (isList && currentNode.type === type) {
           // Same list type → convert to paragraph while preserving alignment
           editor.setNodes({
-            type: 'paragraph',
+            type: "paragraph",
             align: currentAlign,
           });
         } else {
@@ -178,12 +186,12 @@ export const EditorToolbar = (props) => {
         }
       }
       // CASE 2: Converting to heading
-      else if (type.startsWith('h')) {
+      else if (type.startsWith("h")) {
         if (isHeading && currentNode.type === type) {
           // Same heading type → convert to paragraph
           editor.setNodes({
-            type: 'paragraph', 
-            align: currentAlign
+            type: "paragraph",
+            align: currentAlign,
           });
         } else {
           // Different node type (including list) → convert to heading
@@ -194,10 +202,10 @@ export const EditorToolbar = (props) => {
         }
       }
       // CASE 3: Converting to paragraph
-      else if (type === 'paragraph') {
+      else if (type === "paragraph") {
         // Any node type → convert to paragraph
         editor.setNodes({
-          type: 'paragraph',
+          type: "paragraph",
           align: currentAlign,
         });
       }
@@ -205,8 +213,8 @@ export const EditorToolbar = (props) => {
       // CASE 5: Other conversions (code block, etc.)
       else {
         editor.setNodes({
-          type: isBlockActive(type) ? 'paragraph' : type,
-          align: currentAlign
+          type: isBlockActive(type) ? "paragraph" : type,
+          align: currentAlign,
         });
       }
     } catch (error) {
@@ -226,7 +234,7 @@ export const EditorToolbar = (props) => {
   };
 
   const handleListStyleSelect = (blockType) => {
-    console.error('handleListStyleSelect called with:', blockType);
+    console.error("handleListStyleSelect called with:", blockType);
     toggleBlock(blockType);
     handleListMenuClose();
   };
@@ -264,17 +272,17 @@ export const EditorToolbar = (props) => {
 
   const handleFontSizeSelect = (fontSizeStr) => {
     // Extract the size number
-    const size = parseInt(fontSizeStr.replace('fontSize', ''), 10);
-    
+    const size = parseInt(fontSizeStr.replace("fontSize", ""), 10);
+
     // Apply the fontSize mark directly with a numeric value
-    editor.addMark('fontSize', size);
-    
+    editor.addMark("fontSize", size);
+
     handleFontSizeMenuClose();
   };
 
   const getCurrentFontSize = () => {
     const marks = editor?.getMarks() || {};
-    return marks.fontSize ? `${marks.fontSize} pt` : '14 pt';
+    return marks.fontSize ? `${marks.fontSize} pt` : "14 pt";
   };
 
   return (
@@ -293,9 +301,9 @@ export const EditorToolbar = (props) => {
         <div className="slate-toolbar-group flex items-center">
           <IconButton
             id="font-size-button"
-            aria-controls={openFontSize ? 'font-size-menu' : undefined}
+            aria-controls={openFontSize ? "font-size-menu" : undefined}
             aria-haspopup="true"
-            aria-expanded={openFontSize ? 'true' : undefined}
+            aria-expanded={openFontSize ? "true" : undefined}
             onClick={handleFontSizeMenuOpen}
             className="list-style-dropdown flex items-center"
           >
@@ -311,11 +319,11 @@ export const EditorToolbar = (props) => {
             open={openFontSize}
             onClose={handleFontSizeMenuClose}
             MenuListProps={{
-              'aria-labelledby': 'font-size-button',
+              "aria-labelledby": "font-size-button",
             }}
             PaperProps={{
-              className: 'marvel-list-dropdown',
-              style: { maxHeight: '400px' },
+              className: "marvel-list-dropdown",
+              style: { maxHeight: "400px" },
             }}
           >
             <Typography className="list-text-font">Font Size</Typography>
@@ -324,7 +332,7 @@ export const EditorToolbar = (props) => {
                 key={size}
                 onClick={() => handleFontSizeSelect(`fontSize${size}`)}
                 className={`list-option ${
-                  isMarkActive(`fontSize${size}`) ? 'is-active' : ''
+                  isMarkActive(`fontSize${size}`) ? "is-active" : ""
                 }`}
               >
                 <ListItemText
@@ -336,12 +344,20 @@ export const EditorToolbar = (props) => {
           </Menu>
         </div>
         <ToolbarSeparator />
+
+        <div
+      style={{
+        display: "flex",
+        padding: "8px",
+        borderRadius: "5px",
+        boxShadow: "0px 2px 5px rgba(0,0,0,0.2)",
+      }}>
         <TextStyle
           editor={editor}
           isMarkActive={isMarkActive}
           toggleMark={toggleMark}
         />
-
+  </div>
         <ToolbarSeparator />
 
         <div className="slate-toolbar-group flex items-center">
@@ -349,15 +365,15 @@ export const EditorToolbar = (props) => {
             key="bulleted-list"
             nodeType="ul"
             editor={editor}
-            isActive={isBlockActive('ul')}
-            onClick={() => toggleBlock('ul')}
+            isActive={isBlockActive("ul")}
+            onClick={() => toggleBlock("ul")}
           />
           <ListToolbarButton
             key="numbered-list"
             nodeType="ol"
             editor={editor}
-            isActive={isBlockActive('ol')}
-            onClick={() => toggleBlock('ol')}
+            isActive={isBlockActive("ol")}
+            onClick={() => toggleBlock("ol")}
           />
         </div>
 
@@ -477,6 +493,12 @@ export const EditorToolbar = (props) => {
         <ToolbarSeparator />
 
         <LinkToolbarButton />
+
+        {/* Render any custom buttons passed via props */}
+        {customButtons.length > 0 &&
+          customButtons.map((ToolbarButton, index) => (
+            <ToolbarButton key={index} editor={editor} />
+          ))}
       </div>
     </Toolbar>
   );

@@ -42,6 +42,7 @@ import { CodeSyntaxLeaf } from "../plate-ui/code-syntax-leaf";
 import { Editor, EditorContainer } from "../plate-ui/editor";
 import { LinkElement } from "../plate-ui/link-element";
 import { EditorToolbar } from "../plate-ui/toolbar";
+import {ToolbarButton} from "../plate-ui/toolbar";
 
 import styles from "./PlateEditor.module.css";
 import "prismjs/themes/prism.css";
@@ -50,6 +51,7 @@ import { actions as toolActions } from "@/tools/data";
 import { syncHistoryEntry } from "@/tools/data/thunks/editHistory";
 import { EDIT_HISTORY_TYPES } from "@/tools/libs/constants/editor";
 import { TablePlugin } from "@udecode/plate-table/react";
+import ContextualToolbar from "../plate-ui/ContextualToolbar";
 
 const { addStateToEditHistory } = toolActions;
 
@@ -268,8 +270,9 @@ export function PlateEditor(props) {
   return (
     <Plate editor={editor} onChange={({ value }) => handleAutosave(value)}>
       <div className='mb-4'>
-        <EditorToolbar editor={editor} />
+        <EditorToolbar editor={editor} customButtons={[ToolbarButton]}  />
       </div>
+      <ContextualToolbar />
       <EditorContainer className='p-6 bg-background text-foreground rounded-lg shadow-editor'>
         <Editor
           placeholder='Start typing here...'

@@ -96,8 +96,8 @@ const STRUCTURAL_TYPES = ['paragraph', 'heading', 'blockquote', 'code_block', 'l
           PaperProps={{
             style: {
               position: 'fixed',
-              top: '44%',
-              left: '64%',
+              top: '43%',
+              left: '65%',
               transform: 'translate(-50%, -50%)',
             },
             className: 'marvel-list-dropdown',
