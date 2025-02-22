@@ -41,8 +41,4 @@ export function BlockSelection({ className, ...props }) {
       {...props}
     />
   );
-<<<<<<< Updated upstream
 }
-=======
-}
->>>>>>> Stashed changes

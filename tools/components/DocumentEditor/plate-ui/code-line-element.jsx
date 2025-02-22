@@ -7,8 +7,4 @@ import { SlateElement } from '@udecode/plate';
 
 export const CodeLineElement = withRef((props, ref) => (
   <SlateElement ref={ref} {...props} />
-<<<<<<< Updated upstream
 ));
-=======
-));
->>>>>>> Stashed changes

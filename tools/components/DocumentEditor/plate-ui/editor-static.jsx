@@ -45,8 +45,4 @@ export function EditorStatic({ children, className, variant, ...props }) {
       {...props}
     />
   );
-<<<<<<< Updated upstream
 }
-=======
-}
->>>>>>> Stashed changes

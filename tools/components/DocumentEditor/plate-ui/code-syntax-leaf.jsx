@@ -14,8 +14,4 @@ export const CodeSyntaxLeaf = withRef(({ children, ...props }, ref) => {
       <span {...tokenProps}>{children}</span>
     </PlateLeaf>
   );
-<<<<<<< Updated upstream
 });
-=======
-});
->>>>>>> Stashed changes

@@ -19,8 +19,4 @@ const ToolbarExportAdapter = () => {
   );
 };
 
-<<<<<<< Updated upstream
 export default ToolbarExportAdapter;
-=======
-export default ToolbarExportAdapter;
->>>>>>> Stashed changes

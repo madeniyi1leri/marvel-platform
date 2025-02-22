@@ -23,8 +23,4 @@ export const Checkbox = withRef<typeof CheckboxPrimitive.Root>(
       </CheckboxPrimitive.Indicator>
     </CheckboxPrimitive.Root>
   )
-<<<<<<< Updated upstream
 );
-=======
-);
->>>>>>> Stashed changes

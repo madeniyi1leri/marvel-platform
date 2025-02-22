@@ -21,8 +21,4 @@ export const LinkElement = withRef(({ children, ...props }, ref) => {
       </a>
     </PlateElement>
   );
-<<<<<<< Updated upstream
 });
-=======
-});
->>>>>>> Stashed changes

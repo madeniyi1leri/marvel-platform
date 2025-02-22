@@ -169,8 +169,4 @@ export const convertResponseToMarkdown = (response, toolId) => {
         ? response
         : JSON.stringify(response, null, 2);
   }
-<<<<<<< Updated upstream
 };
-=======
-};
->>>>>>> Stashed changes

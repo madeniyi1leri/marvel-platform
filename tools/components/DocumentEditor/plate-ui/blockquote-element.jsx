@@ -19,8 +19,4 @@ export const BlockquoteElement = withRef(
       </PlateElement>
     );
   }
-<<<<<<< Updated upstream
 );
-=======
-);
->>>>>>> Stashed changes

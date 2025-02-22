@@ -23,8 +23,4 @@ export const syncHistoryEntry = createAsyncThunk(
       throw rejectWithValue(error?.message || 'Unable to sync history with Firestore');
     }
   }
-<<<<<<< Updated upstream
 );
-=======
-);
->>>>>>> Stashed changes
