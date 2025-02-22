@@ -246,8 +246,9 @@ export const EditorToolbar = (props) => {
             onClick={handleFontSizeMenuOpen}
             className="list-style-dropdown flex items-center"
           >
+            {/* Needs a rework */}
             <Typography className="mr-1 list-style-dropdown">
-              14 pt /* Needs a rework */
+              14 pt 
             </Typography>
           </IconButton>
           <DropdownArrowIcon className="dropdown-arrow" />
