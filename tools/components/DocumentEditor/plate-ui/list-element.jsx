@@ -28,4 +28,8 @@ export const ListElement = withRef(
       </ListElementVariants>
     );
   }
+<<<<<<< Updated upstream
 );
+=======
+);
+>>>>>>> Stashed changes

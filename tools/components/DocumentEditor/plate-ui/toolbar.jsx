@@ -250,4 +250,8 @@ export const EditorToolbar = (props) => {
       </div>
     </Toolbar>
   );
+<<<<<<< Updated upstream
 };
+=======
+};
+>>>>>>> Stashed changes

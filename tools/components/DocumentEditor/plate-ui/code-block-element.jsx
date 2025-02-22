@@ -55,4 +55,8 @@ export const CodeBlockElement = withRef(
       </SlateElement>
     );
   }
+<<<<<<< Updated upstream
 );
+=======
+);
+>>>>>>> Stashed changes

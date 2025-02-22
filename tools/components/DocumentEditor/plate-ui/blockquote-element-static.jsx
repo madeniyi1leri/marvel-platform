@@ -13,4 +13,8 @@ export const BlockquoteElementStatic = ({ children, className, ...props }) => {
       {children}
     </SlateElement>
   );
+<<<<<<< Updated upstream
 };
+=======
+};
+>>>>>>> Stashed changes

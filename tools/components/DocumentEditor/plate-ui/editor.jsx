@@ -104,4 +104,8 @@ export const Editor = React.forwardRef(
   }
 );
 
+<<<<<<< Updated upstream
 Editor.displayName = 'Editor';
+=======
+Editor.displayName = 'Editor';
+>>>>>>> Stashed changes

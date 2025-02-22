@@ -1,13 +1,13 @@
 import toolHistorySlice from './toolHistorySlice';
-import toolsSlice from './toolsSlice';
+import toolSlice from './toolSlice';
 
 const actions = {
-  ...toolsSlice.actions,
+  ...toolSlice.actions,
   ...toolHistorySlice.actions,
 };
 
 const reducers = {
-  toolsReducer: toolsSlice.reducer,
+  toolsReducer: toolSlice.reducer,
   toolHistoryReducer: toolHistorySlice.reducer,
 };
 

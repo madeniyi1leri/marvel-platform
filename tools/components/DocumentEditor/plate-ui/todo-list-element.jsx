@@ -42,4 +42,8 @@ export const TodoListElement = withRef<typeof PlateElement>(
       </PlateElement>
     );
   }
+<<<<<<< Updated upstream
 );
+=======
+);
+>>>>>>> Stashed changes

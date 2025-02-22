@@ -18,4 +18,8 @@ export const PlateElement = React.forwardRef(
       </PlateElementPrimitive>
     );
   }
+<<<<<<< Updated upstream
 );
+=======
+);
+>>>>>>> Stashed changes

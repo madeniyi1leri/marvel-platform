@@ -426,4 +426,8 @@ export const exportContent = async (content, format) => {
   downloadFile(blob, filename);
 
   return { success: true, filename };
+<<<<<<< Updated upstream
 };
+=======
+};
+>>>>>>> Stashed changes

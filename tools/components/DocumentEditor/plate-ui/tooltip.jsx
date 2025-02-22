@@ -68,4 +68,8 @@ export function withTooltip(Component) {
   });
 }
 
+<<<<<<< Updated upstream
 export const TooltipButton = withTooltip(Button);
+=======
+export const TooltipButton = withTooltip(Button);
+>>>>>>> Stashed changes

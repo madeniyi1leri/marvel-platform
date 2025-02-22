@@ -1,13 +1,13 @@
 import { useContext, useState } from 'react';
 
-import { Menu, MenuItem } from '@mui/material';
+import { Menu, MenuItem, Grid } from '@mui/material';
 import { useSelector } from 'react-redux';
 
 import GradientOutlinedButton from '@/components/GradientOutlinedButton';
 
-import FileExportIcon from '@/assets/svg/FileExport.svg';
+import ExportIcon from '@/assets/svg/ExportIcon.svg';
 
-import styles from './styles';
+import styles from './style';
 
 import ALERT_COLORS from '@/libs/constants/notification';
 import { AuthContext } from '@/libs/providers/GlobalProvider';
@@ -54,12 +54,11 @@ const EditorExport = () => {
   ];
 
   return (
-    <>
+    <Grid>
       <GradientOutlinedButton
-        icon={<FileExportIcon />}
+        icon={<ExportIcon />}
         iconPlacement="left"
         clickHandler={handleClick}
-        text="Export"
         loading={isExporting}
         disabled={isExporting}
         {...styles.outlinedButtonProps}
@@ -81,7 +80,7 @@ const EditorExport = () => {
           </MenuItem>
         ))}
       </Menu>
-    </>
+    </Grid>
   );
 };
 
