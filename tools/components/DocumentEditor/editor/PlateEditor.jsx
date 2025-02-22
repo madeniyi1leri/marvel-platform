@@ -9,6 +9,7 @@ import {
   PlateLeaf,
   usePlateEditor,
 } from '@udecode/plate/react';
+import { AlignPlugin } from '@udecode/plate-alignment/react';
 import {
   BoldPlugin,
   CodePlugin,
@@ -22,12 +23,14 @@ import {
   CodeLinePlugin,
   CodeSyntaxPlugin,
 } from '@udecode/plate-code-block/react';
+
+import { FontSizePlugin } from '@udecode/plate-font/react';
 import { HEADING_KEYS } from '@udecode/plate-heading';
 import { HeadingPlugin } from '@udecode/plate-heading/react';
 import { IndentPlugin } from '@udecode/plate-indent/react';
 import { IndentListPlugin } from '@udecode/plate-indent-list/react';
 import { LinkPlugin } from '@udecode/plate-link/react';
-import { ListPlugin } from '@udecode/plate-list/react';
+import { ListPlugin, TodoListPlugin } from '@udecode/plate-list/react';
 import { MarkdownPlugin } from '@udecode/plate-markdown';
 import Prism from 'prismjs';
 import { useDispatch, useSelector } from 'react-redux';
@@ -37,6 +40,7 @@ import { CodeLineElement } from '../plate-ui/code-line-element';
 import { CodeSyntaxLeaf } from '../plate-ui/code-syntax-leaf';
 import { Editor, EditorContainer } from '../plate-ui/editor';
 import { LinkElement } from '../plate-ui/link-element';
+import { TodoListElement } from '../plate-ui/todo-list-element';
 import { EditorToolbar } from '../plate-ui/toolbar';
 
 import styles from './PlateEditor.module.css';
@@ -45,6 +49,7 @@ import 'prismjs/themes/prism.css';
 import { actions as toolActions } from '@/tools/data';
 import { syncHistoryEntry } from '@/tools/data/thunks/editHistory';
 import { EDIT_HISTORY_TYPES } from '@/tools/libs/constants/editor';
+
 import { TablePlugin } from '@udecode/plate-table/react';
 
 const { addStateToEditHistory } = toolActions;
@@ -85,12 +90,43 @@ export function PlateEditor(props) {
   // Plugins for editor instance & useplateeditor
   const plugins = [
     BlockquotePlugin,
-    ListPlugin,
+    TodoListPlugin.configure({
+      key: 'action_item',
+      options: {
+        validTypes: ['action_item'],
+        enableMarks: true,
+      },
+    }),
+    ListPlugin.configure({
+      options: {
+        validTypes: ['ul', 'ol', 'action_item'],
+        validLiElements: ['ul', 'ol', 'action_item'],
+        enableMarks: true,
+        enableRestart: true,
+        listStyleType: true,
+        initialListStyleType: {
+          ul: 'disc',
+          ol: 'decimal',
+        },
+        listLevelsStyleType: {
+          ol: ['decimal', 'lower-alpha', 'lower-roman'],
+          ul: ['disc', 'circle', 'square'],
+        },
+      },
+    }),
     ParagraphPlugin,
     HeadingPlugin,
     BoldPlugin,
     ItalicPlugin,
     UnderlinePlugin,
+    FontSizePlugin.configure({
+      inject: {
+        props: {
+          defaultNodeValue: 14,
+          validNodeValues: [8, 10, 12, 14, 16, 18, 24, 30, 36, 48, 60, 72, 96],
+        },
+      },
+    }),
     LinkPlugin.configure({
       options: {
         forceProtocol: true,
@@ -103,7 +139,12 @@ export function PlateEditor(props) {
       options: {},
     }),
     CodePlugin,
-    CodeBlockPlugin.configure({ options: { prism: Prism } }),
+    CodeBlockPlugin.configure({
+      options: {
+        prism: Prism,
+        defaultLanguage: 'javascript',
+      },
+    }),
     CodeLinePlugin.configure({}),
     CodeSyntaxPlugin.configure({
       syntax: {
@@ -126,6 +167,10 @@ export function PlateEditor(props) {
         targetPlugins: [ParagraphPlugin.key, HEADING_KEYS.h1],
       },
     }),
+    AlignPlugin.configure({
+      defaultAlign: 'left',
+      validAlignments: ['left', 'center', 'right', 'justify'],
+    }),
   ];
 
   // const editorInstance = createPlateEditor({ plugins });
@@ -144,13 +189,17 @@ export function PlateEditor(props) {
         }),
         ul: withProps(PlateElement, {
           as: 'ul',
+          className: 'list-disc pl-10 my-2',
         }),
         ol: withProps(PlateElement, {
           as: 'ol',
+          className: 'list-decimal pl-10 my-2',
         }),
         li: withProps(PlateElement, {
           as: 'li',
+          className: 'my-1',
         }),
+        action_item: TodoListElement,
         bold: withProps(PlateLeaf, { as: 'strong' }),
         italic: withProps(PlateLeaf, { as: 'em' }),
         underline: withProps(PlateLeaf, { as: 'u' }),
@@ -161,23 +210,29 @@ export function PlateEditor(props) {
           });
           return acc;
         }, {}),
-        p: withProps(PlateElement, {
-          as: 'p',
-        }),
+        p: withProps(PlateElement, { as: 'p', className: 'text-base mb-4' }),
         table: withProps(PlateElement, {
           as: 'table',
+          className: 'w-full border-collapse border border-gray-200',
         }),
         tr: withProps(PlateElement, {
           as: 'tr',
+          className: 'border-b border-gray-200',
         }),
         th: withProps(PlateElement, {
           as: 'th',
+          className: 'px-4 py-2 text-left bg-gray-100',
         }),
-        td: withProps(PlateElement, { as: 'td' }),
-        [CodePlugin.key]: withProps(PlateLeaf, { as: 'code' }),
-        [CodeBlockPlugin.key]: CodeBlockElement,
-        [CodeLinePlugin.key]: CodeLineElement,
-        [CodeSyntaxPlugin.key]: CodeSyntaxLeaf,
+        td: withProps(PlateElement, { as: 'td', className: 'px-4 py-2' }),
+        [FontSizePlugin.key]: withProps(
+          PlateLeaf,
+          ({ children, nodeProps }) => {
+            const { fontSize = 14 } = nodeProps || {};
+            return (
+              <span style={{ fontSize: `${fontSize}px` }}>{children}</span>
+            );
+          }
+        ),
       },
     },
     plugins,
