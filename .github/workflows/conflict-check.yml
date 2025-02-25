@@ -15,14 +15,14 @@ jobs:
         run: git fetch --all
 
       - name: Check for Merge Conflicts
-        id: check-conflicts  # Add id here to reference the output later
         run: |
           git checkout ${{ github.event.pull_request.base.ref }}
-          git merge --no-commit --no-ff ${{ github.event.pull_request.head.ref }} || echo "conflict=true" >> $GITHUB_ENV
-
+          if ! git merge --no-commit --no-ff ${{ github.event.pull_request.head.ref }}; then
+            echo "conflict=true" >> $GITHUB_ENV
+          fi
 
       - name: Comment on PR if Conflict Found
-        if: ${{ steps.check-conflicts.outputs.conflict == 'true' }}
+        if: env.conflict == 'true'
         uses: actions/github-script@v6
         with:
           github-token: ${{ secrets.GITHUB_TOKEN }}
