@@ -18,7 +18,8 @@ jobs:
         id: check-conflicts  # Add id here to reference the output later
         run: |
           git checkout ${{ github.event.pull_request.base.ref }}
-          git merge --no-commit --no-ff ${{ github.event.pull_request.head.ref }} || echo "::set-output name=conflict::true"
+          git merge --no-commit --no-ff ${{ github.event.pull_request.head.ref }} || echo "conflict=true" >> $GITHUB_ENV
+
 
       - name: Comment on PR if Conflict Found
         if: ${{ steps.check-conflicts.outputs.conflict == 'true' }}
