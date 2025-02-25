@@ -1,0 +1,23 @@
+name: Simple Conflict Detection
+
+on:
+  pull_request:
+    types: [opened, synchronize, reopened]
+
+jobs:
+  conflict-check:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout Repository
+        uses: actions/checkout@v3
+
+      - name: Fetch All Branches
+        run: git fetch --all
+
+      - name: Check Merge Conflicts
+        run: |
+          git checkout ${{ github.event.pull_request.base.ref }}
+          git merge --no-commit --no-ff ${{ github.event.pull_request.head.ref }} || echo "Merge conflict detected!" > result.txt
+
+      - name: Display Conflict Result
+        run: cat result.txt
