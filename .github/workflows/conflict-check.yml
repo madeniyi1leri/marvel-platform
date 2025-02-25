@@ -1,0 +1,35 @@
+name: Git Conflict Detector
+
+on:
+  pull_request:
+    types: [opened, synchronize, reopened]
+
+jobs:
+  conflict-check:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout Repository
+        uses: actions/checkout@v3
+
+      - name: Fetch All Branches
+        run: git fetch --all
+
+      - name: Check for Merge Conflicts
+        run: |
+          git checkout ${{ github.event.pull_request.base.ref }}
+          git merge --no-commit --no-ff ${{ github.event.pull_request.head.ref }} || echo "::set-output name=conflict::true"
+
+      - name: Comment on PR if Conflict Found
+        if: ${{ steps.check-conflicts.outputs.conflict == 'true' }}
+        uses: actions/github-script@v6
+        with:
+          github-token: ${{ secrets.GITHUB_TOKEN }}
+          script: |
+            const prNumber = context.payload.pull_request.number;
+            const conflictMsg = `🚨 **Merge conflict detected!** Please resolve conflicts before merging.`;
+            github.rest.issues.createComment({
+              issue_number: prNumber,
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              body: conflictMsg
+            });
