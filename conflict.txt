@@ -1,0 +1,1 @@
+This is a change from git-rebase/merge-resolut branch. I'm testing out an innovative idea
