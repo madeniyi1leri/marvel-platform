@@ -8,20 +8,29 @@ jobs:
   conflict-check:
     runs-on: ubuntu-latest
     permissions:
-      contents: read
+      contents: write
       pull-requests: write
+      actions: write
     steps:
       - name: Checkout Repository
         uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
 
       - name: Fetch All Branches
-        run: git fetch --all
+        run: |
+          git config user.name "GitHub Actions"
+          git config user.email "actions@github.com"
+          git fetch --all
 
       - name: Check for Merge Conflicts
         run: |
           git checkout ${{ github.event.pull_request.base.ref }}
           if ! git merge --no-commit --no-ff ${{ github.event.pull_request.head.ref }}; then
             echo "conflict=true" >> $GITHUB_ENV
+            git merge --abort
+          else
+            git merge --abort
           fi
 
       - name: Comment on PR if Conflict Found
@@ -31,7 +40,7 @@ jobs:
           github-token: ${{ secrets.GITHUB_TOKEN }}
           script: |
             const prNumber = context.payload.pull_request.number;
-            const conflictMsg = `🚨 **Merge conflict detected!** Please resolve conflicts before merging.`;
+            const conflictMsg = '🚨 **Merge conflict detected!** Please resolve conflicts before merging.';
             await github.rest.issues.createComment({
               issue_number: prNumber,
               owner: context.repo.owner,
