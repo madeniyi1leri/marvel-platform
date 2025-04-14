@@ -60,6 +60,14 @@ jobs:
             echo "$CONFLICT_FILES" >> $GITHUB_ENV
             echo "EOF" >> $GITHUB_ENV
             
+            # Get conflict details for each file
+            for file in $CONFLICT_FILES; do
+              CONFLICT_DETAILS=$(git diff --unified=0 "$file" | grep -A 3 '^@@' | sed 's/^/    /')
+              echo "CONFLICT_$file<<EOF" >> $GITHUB_ENV
+              echo "$CONFLICT_DETAILS" >> $GITHUB_ENV
+              echo "EOF" >> $GITHUB_ENV
+            done
+            
             git merge --abort
           else
             echo "HAS_CONFLICT=false" >> $GITHUB_ENV
@@ -101,6 +109,28 @@ jobs:
               console.error('Error creating check run:', error);
             }
 
+      - name: Generate AI Suggestions
+        if: env.HAS_CONFLICT == 'true' && github.event_name == 'pull_request_target'
+        run: |
+          #!/bin/bash
+          set -e
+          
+          # Get list of conflicting files
+          CONFLICT_FILES=$(echo "$CONFLICT_FILES" | tr '\n' ' ')
+          
+          # Generate suggestions for each file
+          for file in $CONFLICT_FILES; do
+            CONFLICT_DETAILS=$(eval echo "\$CONFLICT_$file")
+            
+            # Create a prompt for the AI
+            PROMPT="I have a merge conflict in $file. Here are the conflict details:\n\n$CONFLICT_DETAILS\n\nPlease suggest how to resolve this conflict. Consider:\n1. The context of the changes\n2. Best practices for this type of file\n3. Similar conflicts you've seen before\n\nProvide specific suggestions for resolving the conflict."
+            
+            # Store the prompt for the comment
+            echo "SUGGESTION_$file<<EOF" >> $GITHUB_ENV
+            echo "$PROMPT" >> $GITHUB_ENV
+            echo "EOF" >> $GITHUB_ENV
+          done
+
       - name: Comment on PR if Conflict Found
         if: env.HAS_CONFLICT == 'true' && github.event_name == 'pull_request_target'
         uses: actions/github-script@v7
@@ -109,14 +139,25 @@ jobs:
           script: |
             const prNumber = context.payload.pull_request.number;
             const conflictFiles = process.env.CONFLICT_FILES.split('\n').filter(Boolean);
-            const conflictMsg = '🚨 **Merge conflict detected!** Please resolve conflicts before merging.\n\n' +
+            
+            // Build the conflict message with AI suggestions
+            let conflictMsg = '🚨 **Merge conflict detected!** Please resolve conflicts before merging.\n\n' +
               '### Conflicting Files:\n' +
               conflictFiles.map(file => `- \`${file}\``).join('\n') + '\n\n' +
               '### How to Resolve:\n' +
               `1. Pull the latest changes from ${context.payload.pull_request.base.ref}\n` +
               '2. Resolve conflicts in the files listed above\n' +
               '3. Commit your changes\n' +
-              '4. Push to your branch';
+              '4. Push to your branch\n\n' +
+              '### AI Suggestions for Resolution:\n\n';
+            
+            // Add AI suggestions for each file
+            for (const file of conflictFiles) {
+              const suggestion = process.env[`SUGGESTION_${file}`];
+              if (suggestion) {
+                conflictMsg += `#### ${file}\n${suggestion}\n\n`;
+              }
+            }
             
             console.log('Attempting to create comment on PR:', prNumber);
             try {
