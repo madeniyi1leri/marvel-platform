@@ -3,7 +3,6 @@ name: Git Conflict Detector Workflow
 on:
   pull_request:
     types: [opened, synchronize, reopened]
-    branches: [ develop ]
   push:
     branches: [ test-conflict-workflow ]
 
