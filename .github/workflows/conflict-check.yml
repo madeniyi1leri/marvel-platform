@@ -36,20 +36,25 @@ jobs:
       - name: Check for Merge Conflicts
         id: check_conflicts
         run: |
+          #!/bin/bash
+          set -e
+          
           # Get the base and head refs
           BASE_REF=${{ github.event.pull_request.base.ref || 'develop' }}
           HEAD_REF=${{ github.event.pull_request.head.ref || github.ref_name }}
           
+          echo "Checking for conflicts between $BASE_REF and $HEAD_REF"
+          
           # Checkout base branch
-          git checkout $BASE_REF
+          git checkout "$BASE_REF"
           
           # Try to merge and check for conflicts
-          if ! git merge --no-commit --no-ff $HEAD_REF 2>&1; then
-            echo "CONFLICT=true" >> $GITHUB_OUTPUT
+          if ! git merge --no-commit --no-ff "$HEAD_REF" 2>&1; then
+            echo "CONFLICT=true" >> "$GITHUB_OUTPUT"
             echo "Found conflicts between $BASE_REF and $HEAD_REF"
             git merge --abort
           else
-            echo "CONFLICT=false" >> $GITHUB_OUTPUT
+            echo "CONFLICT=false" >> "$GITHUB_OUTPUT"
             echo "No conflicts found between $BASE_REF and $HEAD_REF"
             git merge --abort
           fi
