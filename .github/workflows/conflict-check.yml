@@ -13,7 +13,6 @@ jobs:
       contents: write
       pull-requests: write
       actions: write
-      issues: write
     steps:
       - name: Checkout Repository
         uses: actions/checkout@v4
@@ -39,7 +38,7 @@ jobs:
         run: |
           git checkout ${{ github.event.pull_request.base.ref || 'develop' }}
           git status
-          if ! git merge --no-commit --no-ff ${{ github.event.pull_request.head.ref || github.ref_name }}; then
+          if ! git merge --no-commit --no-ff ${{ github.event.pull_request.head.ref || github.ref_name }} 2>&1; then
             echo "CONFLICT=true" >> $GITHUB_OUTPUT
             git merge --abort
           else
@@ -67,26 +66,6 @@ jobs:
               console.log('Comment created successfully');
             } catch (error) {
               console.error('Error creating comment:', error);
-            }
-
-      - name: Create Issue if Conflict Found on Push
-        if: steps.check_conflicts.outputs.CONFLICT == 'true' && github.event_name == 'push'
-        uses: actions/github-script@v7
-        with:
-          github-token: ${{ secrets.GITHUB_TOKEN }}
-          script: |
-            const conflictMsg = '🚨 **Merge conflict detected!** There are conflicts between this branch and develop.';
-            try {
-              await github.rest.issues.create({
-                owner: context.repo.owner,
-                repo: context.repo.repo,
-                title: `Merge Conflict Detected in ${context.ref}`,
-                body: conflictMsg,
-                labels: ['conflict']
-              });
-              console.log('Issue created successfully');
-            } catch (error) {
-              console.error('Error creating issue:', error);
               console.log('Error details:', error.response?.data);
             }
  
