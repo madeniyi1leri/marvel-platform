@@ -34,7 +34,6 @@ jobs:
           git branch -a
 
       - name: Check for Merge Conflicts
-        id: check_conflicts
         run: |
           #!/bin/bash
           set -e
@@ -50,19 +49,17 @@ jobs:
           
           # Try to merge and check for conflicts
           if ! git merge --no-commit --no-ff "$HEAD_REF" 2>&1; then
-            echo "CONFLICT=true" >> "$GITHUB_OUTPUT"
+            echo "HAS_CONFLICT=true" >> $GITHUB_ENV
             echo "Found conflicts between $BASE_REF and $HEAD_REF"
             git merge --abort
           else
-            echo "CONFLICT=false" >> "$GITHUB_OUTPUT"
+            echo "HAS_CONFLICT=false" >> $GITHUB_ENV
             echo "No conflicts found between $BASE_REF and $HEAD_REF"
             git merge --abort
           fi
-          
-          echo "Conflict status: ${{ steps.check_conflicts.outputs.CONFLICT }}"
 
       - name: Comment on PR if Conflict Found
-        if: steps.check_conflicts.outputs.CONFLICT == 'true' && github.event_name == 'pull_request'
+        if: env.HAS_CONFLICT == 'true' && github.event_name == 'pull_request'
         uses: actions/github-script@v7
         with:
           github-token: ${{ secrets.GITHUB_TOKEN }}
