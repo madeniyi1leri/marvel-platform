@@ -1,7 +1,7 @@
 name: Git Conflict Detector Workflow
 
 on:
-  pull_request:
+  pull_request_target:
     types: [opened, synchronize, reopened]
   push:
     branches: [ test-conflict-workflow ]
@@ -55,7 +55,7 @@ jobs:
           fi
 
       - name: Comment on PR if Conflict Found
-        if: env.HAS_CONFLICT == 'true' && github.event_name == 'pull_request'
+        if: env.HAS_CONFLICT == 'true' && github.event_name == 'pull_request_target'
         uses: actions/github-script@v7
         with:
           github-token: ${{ secrets.GITHUB_TOKEN }}
