@@ -34,20 +34,21 @@ jobs:
           git branch -a
 
       - name: Check for Merge Conflicts
+        id: check_conflicts
         run: |
           git checkout ${{ github.event.pull_request.base.ref || 'develop' }}
           git status
           if ! git merge --no-commit --no-ff ${{ github.event.pull_request.head.ref || github.ref_name }}; then
-            echo "conflict=true" >> $GITHUB_ENV
+            echo "CONFLICT=true" >> $GITHUB_OUTPUT
             git merge --abort
           else
-            echo "conflict=false" >> $GITHUB_ENV
+            echo "CONFLICT=false" >> $GITHUB_OUTPUT
             git merge --abort
           fi
-          echo "Conflict status: ${{ env.conflict }}"
+          echo "Conflict status: ${{ steps.check_conflicts.outputs.CONFLICT }}"
 
       - name: Comment on PR if Conflict Found
-        if: env.conflict == 'true' && github.event_name == 'pull_request'
+        if: steps.check_conflicts.outputs.CONFLICT == 'true' && github.event_name == 'pull_request'
         uses: actions/github-script@v7
         with:
           github-token: ${{ secrets.GITHUB_TOKEN }}
@@ -66,3 +67,23 @@ jobs:
             } catch (error) {
               console.error('Error creating comment:', error);
             }
+
+      - name: Create Issue if Conflict Found on Push
+        if: steps.check_conflicts.outputs.CONFLICT == 'true' && github.event_name == 'push'
+        uses: actions/github-script@v7
+        with:
+          github-token: ${{ secrets.GITHUB_TOKEN }}
+          script: |
+            const conflictMsg = '🚨 **Merge conflict detected!** There are conflicts between this branch and develop.';
+            try {
+              await github.rest.issues.create({
+                owner: context.repo.owner,
+                repo: context.repo.repo,
+                title: `Merge Conflict Detected in ${context.ref}`,
+                body: conflictMsg
+              });
+              console.log('Issue created successfully');
+            } catch (error) {
+              console.error('Error creating issue:', error);
+            }
+ 
