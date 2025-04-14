@@ -23,6 +23,11 @@ jobs:
           echo "Head Ref: ${{ github.event.pull_request.head.ref }}"
           echo "Repository: ${{ github.repository }}"
 
+      - name: Configure Git
+        run: |
+          git config --global user.name "GitHub Actions"
+          git config --global user.email "actions@github.com"
+
       - name: Checkout Repository
         uses: actions/checkout@v4
         with:
