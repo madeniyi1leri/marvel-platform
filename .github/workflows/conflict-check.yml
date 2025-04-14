@@ -1,4 +1,4 @@
-name: Git Conflict Detector
+name: Git Conflict Detector Workflow
 
 on:
   pull_request:
