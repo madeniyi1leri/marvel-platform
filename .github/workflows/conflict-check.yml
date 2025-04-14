@@ -38,13 +38,15 @@ jobs:
         run: |
           git checkout ${{ github.event.pull_request.base.ref || 'develop' }}
           git status
-          if ! git merge --no-commit --no-ff ${{ github.event.pull_request.head.ref || github.ref_name }} 2>&1; then
+          MERGE_OUTPUT=$(git merge --no-commit --no-ff ${{ github.event.pull_request.head.ref || github.ref_name }} 2>&1)
+          MERGE_EXIT=$?
+          if [ $MERGE_EXIT -ne 0 ]; then
             echo "CONFLICT=true" >> $GITHUB_OUTPUT
-            git merge --abort
+            echo "Found conflicts: $MERGE_OUTPUT"
           else
             echo "CONFLICT=false" >> $GITHUB_OUTPUT
-            git merge --abort
           fi
+          git merge --abort
           echo "Conflict status: ${{ steps.check_conflicts.outputs.CONFLICT }}"
 
       - name: Comment on PR if Conflict Found
