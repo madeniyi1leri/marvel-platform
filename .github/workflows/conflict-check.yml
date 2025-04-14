@@ -17,21 +17,31 @@ jobs:
         with:
           fetch-depth: 0
 
+      - name: Debug PR Info
+        run: |
+          echo "PR Number: ${{ github.event.pull_request.number }}"
+          echo "Base Ref: ${{ github.event.pull_request.base.ref }}"
+          echo "Head Ref: ${{ github.event.pull_request.head.ref }}"
+
       - name: Fetch All Branches
         run: |
           git config user.name "GitHub Actions"
           git config user.email "actions@github.com"
           git fetch --all
+          git branch -a
 
       - name: Check for Merge Conflicts
         run: |
           git checkout ${{ github.event.pull_request.base.ref }}
+          git status
           if ! git merge --no-commit --no-ff ${{ github.event.pull_request.head.ref }}; then
             echo "conflict=true" >> $GITHUB_ENV
             git merge --abort
           else
+            echo "conflict=false" >> $GITHUB_ENV
             git merge --abort
           fi
+          echo "Conflict status: ${{ env.conflict }}"
 
       - name: Comment on PR if Conflict Found
         if: env.conflict == 'true'
@@ -41,9 +51,15 @@ jobs:
           script: |
             const prNumber = context.payload.pull_request.number;
             const conflictMsg = '🚨 **Merge conflict detected!** Please resolve conflicts before merging.';
-            await github.rest.issues.createComment({
-              issue_number: prNumber,
-              owner: context.repo.owner,
-              repo: context.repo.repo,
-              body: conflictMsg
-            });
+            console.log('Attempting to create comment on PR:', prNumber);
+            try {
+              await github.rest.issues.createComment({
+                issue_number: prNumber,
+                owner: context.repo.owner,
+                repo: context.repo.repo,
+                body: conflictMsg
+              });
+              console.log('Comment created successfully');
+            } catch (error) {
+              console.error('Error creating comment:', error);
+            }
