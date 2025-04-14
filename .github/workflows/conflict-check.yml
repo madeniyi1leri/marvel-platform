@@ -36,22 +36,24 @@ jobs:
       - name: Check for Merge Conflicts
         id: check_conflicts
         run: |
-          git checkout ${{ github.event.pull_request.base.ref || 'develop' }}
-          git status
-          # Try to merge and capture the output
-          MERGE_OUTPUT=$(git merge --no-commit --no-ff ${{ github.event.pull_request.head.ref || github.ref_name }} 2>&1)
-          MERGE_EXIT=$?
+          # Get the base and head refs
+          BASE_REF=${{ github.event.pull_request.base.ref || 'develop' }}
+          HEAD_REF=${{ github.event.pull_request.head.ref || github.ref_name }}
           
-          # Check if there are any conflicts
-          if echo "$MERGE_OUTPUT" | grep -q "CONFLICT"; then
+          # Checkout base branch
+          git checkout $BASE_REF
+          
+          # Try to merge and check for conflicts
+          if ! git merge --no-commit --no-ff $HEAD_REF 2>&1; then
             echo "CONFLICT=true" >> $GITHUB_OUTPUT
-            echo "Found conflicts: $MERGE_OUTPUT"
+            echo "Found conflicts between $BASE_REF and $HEAD_REF"
+            git merge --abort
           else
             echo "CONFLICT=false" >> $GITHUB_OUTPUT
+            echo "No conflicts found between $BASE_REF and $HEAD_REF"
+            git merge --abort
           fi
           
-          # Always abort the merge
-          git merge --abort
           echo "Conflict status: ${{ steps.check_conflicts.outputs.CONFLICT }}"
 
       - name: Comment on PR if Conflict Found
