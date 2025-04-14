@@ -34,21 +34,32 @@ jobs:
           git branch -a
 
       - name: Check for Merge Conflicts
-        id: check_conflicts
         run: |
-          git checkout ${{ github.event.pull_request.base.ref || 'develop' }}
-          git status
-          if ! git merge --no-commit --no-ff ${{ github.event.pull_request.head.ref || github.ref_name }}; then
-            echo "CONFLICT=true" >> $GITHUB_OUTPUT
+          #!/bin/bash
+          set -e
+          
+          # Get the base and head refs
+          BASE_REF=${{ github.event.pull_request.base.ref || 'develop' }}
+          HEAD_REF=${{ github.event.pull_request.head.ref || github.ref_name }}
+          
+          echo "Checking for conflicts between $BASE_REF and $HEAD_REF"
+          
+          # Checkout base branch
+          git checkout "$BASE_REF"
+          
+          # Try to merge and check for conflicts
+          if ! git merge --no-commit --no-ff "$HEAD_REF" 2>&1; then
+            echo "HAS_CONFLICT=true" >> $GITHUB_ENV
+            echo "Found conflicts between $BASE_REF and $HEAD_REF"
             git merge --abort
           else
-            echo "CONFLICT=false" >> $GITHUB_OUTPUT
+            echo "HAS_CONFLICT=false" >> $GITHUB_ENV
+            echo "No conflicts found between $BASE_REF and $HEAD_REF"
             git merge --abort
           fi
-          echo "Conflict status: ${{ steps.check_conflicts.outputs.CONFLICT }}"
 
       - name: Comment on PR if Conflict Found
-        if: steps.check_conflicts.outputs.CONFLICT == 'true' && github.event_name == 'pull_request'
+        if: env.HAS_CONFLICT == 'true' && github.event_name == 'pull_request'
         uses: actions/github-script@v7
         with:
           github-token: ${{ secrets.GITHUB_TOKEN }}
@@ -66,24 +77,6 @@ jobs:
               console.log('Comment created successfully');
             } catch (error) {
               console.error('Error creating comment:', error);
-            }
-
-      - name: Create Issue if Conflict Found on Push
-        if: steps.check_conflicts.outputs.CONFLICT == 'true' && github.event_name == 'push'
-        uses: actions/github-script@v7
-        with:
-          github-token: ${{ secrets.GITHUB_TOKEN }}
-          script: |
-            const conflictMsg = '🚨 **Merge conflict detected!** There are conflicts between this branch and develop.';
-            try {
-              await github.rest.issues.create({
-                owner: context.repo.owner,
-                repo: context.repo.repo,
-                title: `Merge Conflict Detected in ${context.ref}`,
-                body: conflictMsg
-              });
-              console.log('Issue created successfully');
-            } catch (error) {
-              console.error('Error creating issue:', error);
+              console.log('Error details:', error.response?.data);
             }
  
