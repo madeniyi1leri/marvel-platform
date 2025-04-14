@@ -3,6 +3,8 @@ name: Git Conflict Detector Workflow
 on:
   pull_request:
     types: [opened, synchronize, reopened]
+  push:
+    branches: [ test-conflict-workflow ]
 
 jobs:
   conflict-check:
@@ -22,6 +24,7 @@ jobs:
           echo "PR Number: ${{ github.event.pull_request.number }}"
           echo "Base Ref: ${{ github.event.pull_request.base.ref }}"
           echo "Head Ref: ${{ github.event.pull_request.head.ref }}"
+          echo "Event Type: ${{ github.event_name }}"
 
       - name: Fetch All Branches
         run: |
@@ -32,9 +35,9 @@ jobs:
 
       - name: Check for Merge Conflicts
         run: |
-          git checkout ${{ github.event.pull_request.base.ref }}
+          git checkout ${{ github.event.pull_request.base.ref || 'develop' }}
           git status
-          if ! git merge --no-commit --no-ff ${{ github.event.pull_request.head.ref }}; then
+          if ! git merge --no-commit --no-ff ${{ github.event.pull_request.head.ref || github.ref_name }}; then
             echo "conflict=true" >> $GITHUB_ENV
             git merge --abort
           else
@@ -44,7 +47,7 @@ jobs:
           echo "Conflict status: ${{ env.conflict }}"
 
       - name: Comment on PR if Conflict Found
-        if: env.conflict == 'true'
+        if: env.conflict == 'true' && github.event_name == 'pull_request'
         uses: actions/github-script@v7
         with:
           github-token: ${{ secrets.GITHUB_TOKEN }}
