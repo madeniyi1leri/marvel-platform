@@ -1,1 +1,4 @@
-This is a different change from develop
+This is a test file for conflict detection.
+Line 1
+Line 2
+Line 3
