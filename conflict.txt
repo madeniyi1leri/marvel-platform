@@ -1,1 +1,4 @@
-This is a different change from develop
+This is a different version in develop branch.
+Line A
+Line B
+Line C
