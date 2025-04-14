@@ -13,6 +13,7 @@ jobs:
       contents: write
       pull-requests: write
       actions: write
+      issues: write
     steps:
       - name: Checkout Repository
         uses: actions/checkout@v4
@@ -80,10 +81,12 @@ jobs:
                 owner: context.repo.owner,
                 repo: context.repo.repo,
                 title: `Merge Conflict Detected in ${context.ref}`,
-                body: conflictMsg
+                body: conflictMsg,
+                labels: ['conflict']
               });
               console.log('Issue created successfully');
             } catch (error) {
               console.error('Error creating issue:', error);
+              console.log('Error details:', error.response?.data);
             }
  
