@@ -62,9 +62,13 @@ jobs:
             
             # Get conflict details for each file
             for file in $CONFLICT_FILES; do
-              CONFLICT_DETAILS=$(git diff --unified=0 "$file" | grep -A 3 '^@@' | sed 's/^/    /')
+              # Get the actual conflict markers and content
+              CONFLICT_CONTENT=$(git show :1:"$file" | sed 's/^/    BASE: /')
+              CONFLICT_CONTENT+=$'\n'$(git show :2:"$file" | sed 's/^/    HEAD: /')
+              CONFLICT_CONTENT+=$'\n'$(git show :3:"$file" | sed 's/^/    MERGED: /')
+              
               echo "CONFLICT_$file<<EOF" >> $GITHUB_ENV
-              echo "$CONFLICT_DETAILS" >> $GITHUB_ENV
+              echo "$CONFLICT_CONTENT" >> $GITHUB_ENV
               echo "EOF" >> $GITHUB_ENV
             done
             
@@ -149,13 +153,16 @@ jobs:
               '2. Resolve conflicts in the files listed above\n' +
               '3. Commit your changes\n' +
               '4. Push to your branch\n\n' +
-              '### AI Suggestions for Resolution:\n\n';
+              '### Conflict Details and Suggestions:\n\n';
             
-            // Add AI suggestions for each file
+            // Add conflict details and suggestions for each file
             for (const file of conflictFiles) {
+              const conflictDetails = process.env[`CONFLICT_${file}`];
               const suggestion = process.env[`SUGGESTION_${file}`];
+              
+              conflictMsg += `#### ${file}\n\`\`\`\n${conflictDetails}\n\`\`\`\n\n`;
               if (suggestion) {
-                conflictMsg += `#### ${file}\n${suggestion}\n\n`;
+                conflictMsg += `**AI Suggestion:**\n${suggestion}\n\n`;
               }
             }
             
